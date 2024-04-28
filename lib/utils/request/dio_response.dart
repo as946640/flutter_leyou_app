@@ -9,8 +9,12 @@ class ApiResponse<T> {
   late T data;
 
   ApiResponse.fromJson(Map<String, dynamic> json) {
-    code = json['code'];
-    msg = json['msg'] is List ? json['msg'].join() : json['msg'] ?? '';
+    // 这里要兼容 openiM 0 代码没有错误
+    int c = json['code'] ?? json['errCode'];
+    code = c == 0 ? 200 : c;
+    msg = json['msg'] is List
+        ? json['msg'].join()
+        : json['msg'] ?? json['errMsg'] ?? '';
     data = json['data'];
   }
 

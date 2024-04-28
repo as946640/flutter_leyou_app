@@ -8,7 +8,7 @@ import 'package:mall_community/pages/preview_video/preview_video.dart';
 import 'package:mall_community/utils/toast/toast.dart';
 
 /// 是否生产模式
-isProduction() {
+bool isProduction() {
   return kReleaseMode;
 }
 

@@ -1,68 +1,79 @@
+import 'dart:async';
+
 import 'package:easy_refresh/easy_refresh.dart';
+import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
 import 'package:get/get.dart';
 import 'package:mall_community/api/chat/chat.dart';
-import 'package:mall_community/utils/request/dio_response.dart';
+import 'package:mall_community/components/not_data/not_data.dart';
+import 'package:mall_community/controller/im_callback.dart';
+import 'package:mall_community/controller/open_im_controller.dart';
+import 'package:mall_community/utils/event_bus/event_bus.dart';
 
 /// 好友和群数据module
 class MsgListModule extends GetxController {
+  final StreamController streamController = StreamController();
   final loading = false.obs;
 
-  ///好友消息列表
-  final msgList = [].obs;
-  Map<String, dynamic> params = {'page': 1, 'pageSize': 10};
-  Future<ApiResponse> getMsgList() async {
-    var result = await reqFriendMsgs(params);
-    if (result.data['list'].length > 0) {
-      msgList.addAll(result.data['list']);
+  Future<int> getData(Future<int> Function() fetch) async {
+    if (OpenImController.status == IMSdkStatus.connectionSucceeded) {
+      return await fetch();
+    } else if (OpenImController.status == IMSdkStatus.connectionFailed) {
+      return NetWorkDataStatus.notError;
+    } else {
+      return NetWorkDataStatus.notLoading;
     }
-    return result;
+  }
+
+  ///好友消息列表
+  RxList<ConversationInfo> msgList = RxList<ConversationInfo>([]);
+  Map<String, dynamic> params = {'page': 0};
+  Future<int> getMsgList() async {
+    return getData(() async {
+      List<ConversationInfo> list = await OpenImController.getConversationList(
+        page: params['page'],
+      );
+      if (list.isEmpty) {
+        return NetWorkDataStatus.notMoreData;
+      }
+      msgList.addAll(list);
+      return NetWorkDataStatus.loadingOK;
+    });
   }
 
   ///好友列表
-  final friends = [].obs;
-  Map<String, dynamic> params2 = {'page': 1, 'pageSize': 10};
-  Future<ApiResponse> getFriends() async {
-    var result = await reqFriends(params2);
-    if (result.data['list'].length > 0) {
-      friends.addAll(result.data['list']);
-    }
-    return result;
+  RxList<FullUserInfo> friends = RxList();
+  Future<int> getFriends() async {
+    return getData(() async {
+      List<FullUserInfo> list = await OpenImController.getFriendList();
+      if (list.isEmpty) {
+        return NetWorkDataStatus.notData;
+      }
+      friends.addAll(list);
+      return NetWorkDataStatus.loadingOK;
+    });
   }
 
   ///群列表
-  final groups = [].obs;
-  Map<String, dynamic> params3 = {'page': 1, 'pageSize': 10};
-  Future<ApiResponse> getGroups() async {
-    var result = await reqGroups(params3);
-    if (result.data['list'].length > 0) {
-      groups.addAll(result.data['list']);
-    }
-    return result;
+  RxList<GroupInfo> groups = RxList<GroupInfo>();
+  Future<int> getGroups() async {
+    return getData(() async {
+      List<GroupInfo> list = await OpenImController.getJoinedGroupList();
+      if (list.isEmpty) {
+        return NetWorkDataStatus.notData;
+      }
+      groups.addAll(list);
+      return NetWorkDataStatus.loadingOK;
+    });
   }
 
   // 加载更多
   late EasyRefreshController easyRefreshController;
-  getMore(type) async {
-    late ApiResponse result;
-    switch (type) {
-      case 1:
-        params2['page'] += 1;
-        result = await getFriends();
-        break;
-      case 2:
-        params3['page'] += 1;
-        result = await getGroups();
-        break;
-      default:
-        params['page'] += 1;
-        result = await getMsgList();
-    }
-
-    if (result.data['list'].length == 0 || result.data['list'].length < 10) {
-      easyRefreshController.finishLoad(IndicatorResult.noMore);
-    } else {
-      easyRefreshController.finishLoad(IndicatorResult.success);
-    }
+  getMore() async {
+    // if (result.data['list'].length == 0 || result.data['list'].length < 10) {
+    //   easyRefreshController.finishLoad(IndicatorResult.noMore);
+    // } else {
+    //   easyRefreshController.finishLoad(IndicatorResult.success);
+    // }
   }
 
   toChat(user) {
@@ -71,5 +82,41 @@ class MsgListModule extends GetxController {
       'avatar': user['avatar'],
       'userName': user['userName'],
     });
+  }
+
+  // im sdk状态
+  imStatusChange(status) {
+    if (status == IMSdkStatus.connectionSucceeded) {
+      streamController.add('refresh');
+    }
+  }
+
+  // 会话更新
+  onConversationChanged(List<ConversationInfo> list) {
+    for (var item in list) {
+      int inx = msgList.indexWhere(
+        (element) => element.conversationID == item.conversationID,
+      );
+      if (inx != -1) {
+        msgList[inx] = item;
+      } else {
+        msgList.add(item);
+      }
+    }
+  }
+
+  @override
+  void onInit() {
+    super.onInit();
+    EventBus.on(ImCallbackEvent.imSdkStatus, imStatusChange);
+    EventBus.on(ImCallbackEvent.conversationChanged, onConversationChanged);
+  }
+
+  @override
+  void onClose() {
+    streamController.close();
+    EventBus.off(ImCallbackEvent.imSdkStatus, imStatusChange);
+    EventBus.off(ImCallbackEvent.imSdkStatus, onConversationChanged);
+    super.onClose();
   }
 }

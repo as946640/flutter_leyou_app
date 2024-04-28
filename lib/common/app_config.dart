@@ -1,19 +1,28 @@
 import 'package:mall_community/utils/utils.dart';
 
 class AppConfig {
+  static const String appTitle = "乐悠云社";
+
+  static const String host = "http://";
+
   /// 请求地址
   static String baseUrl =
-      isProduction() ? 'http://8.138.91.219:3000' : 'http://8.138.91.219:3000';
+      isProduction() ? '${host}8.138.91.219:3000' : '${host}8.138.91.219:3000';
 
-  /// Go服务器 api
-  static String goBaseUrl = isProduction()
-      ? 'https://psj.junwangfei.cn'
-      : 'https://psjdev.t1.junwangfei.cn';
+  /// openIm server api
+  static String openApi = isProduction()
+      ? '${host}8.138.91.219:10002'
+      : '${host}192.168.219.111:10002';
 
-  /// wss 直播链接地址
-  static String liveWss = isProduction()
-      ? 'wss://live.gyl.junwangfei.cn/ws'
-      : 'wss://live.gyl.junwangfei.cn/ws';
+  /// openIm chat wss
+  static String openChatWss =
+      isProduction() ? 'ws://8.138.91.219:10001' : 'ws://192.168.219.111:10001';
+
+  /// openIm 全局链路追踪ID
+  static String get operationID =>
+      DateTime.now().millisecondsSinceEpoch.toString();
+
+  static const String openImSecret = "openIM123";
 
   /// oss 资源前缀
   static String ossPath =

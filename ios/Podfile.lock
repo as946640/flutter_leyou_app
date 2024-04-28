@@ -70,6 +70,9 @@ PODS:
     - Flutter
   - flutter_localization (0.0.1):
     - Flutter
+  - flutter_openim_sdk (0.0.1):
+    - Flutter
+    - OpenIMSDKCore (= 3.5.1)
   - flutter_sound (9.4.6):
     - Flutter
     - flutter_sound_core (= 9.4.6)
@@ -80,6 +83,7 @@ PODS:
   - images_picker (0.0.1):
     - Flutter
     - ZLPhotoBrowser (= 4.2.5)
+  - OpenIMSDKCore (3.5.1)
   - package_info_plus (0.4.5):
     - Flutter
   - path_provider_foundation (0.0.1):
@@ -120,6 +124,7 @@ DEPENDENCIES:
   - flutter_bmflocation (from `.symlinks/plugins/flutter_bmflocation/ios`)
   - flutter_keyboard_visibility (from `.symlinks/plugins/flutter_keyboard_visibility/ios`)
   - flutter_localization (from `.symlinks/plugins/flutter_localization/ios`)
+  - flutter_openim_sdk (from `.symlinks/plugins/flutter_openim_sdk/ios`)
   - flutter_sound (from `.symlinks/plugins/flutter_sound/ios`)
   - flutter_webrtc (from `.symlinks/plugins/flutter_webrtc/ios`)
   - images_picker (from `.symlinks/plugins/images_picker/ios`)
@@ -138,6 +143,7 @@ SPEC REPOS:
     - DKImagePickerController
     - DKPhotoGallery
     - flutter_sound_core
+    - OpenIMSDKCore
     - SDWebImage
     - SwiftyGif
     - WebRTC-SDK
@@ -168,6 +174,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_keyboard_visibility/ios"
   flutter_localization:
     :path: ".symlinks/plugins/flutter_localization/ios"
+  flutter_openim_sdk:
+    :path: ".symlinks/plugins/flutter_openim_sdk/ios"
   flutter_sound:
     :path: ".symlinks/plugins/flutter_sound/ios"
   flutter_webrtc:
@@ -206,10 +214,12 @@ SPEC CHECKSUMS:
   flutter_bmflocation: 2a478a9b70e1a5fd0857a39a47d06090dbc0a63a
   flutter_keyboard_visibility: 0339d06371254c3eb25eeb90ba8d17dca8f9c069
   flutter_localization: f43b18844a2b3d2c71fd64f04ffd6b1e64dd54d4
+  flutter_openim_sdk: 81a70127bb8523bc3dd4f4b8198c24a5a5596b19
   flutter_sound: d1ed7b8bac3c4513ac5ef8b90c15f3a6b860291b
   flutter_sound_core: 46f6f56752a209dcc72be9f09b71c8b626f70d49
   flutter_webrtc: 55df3aaa802114dad390191a46c2c8d535751268
   images_picker: fa9364e3a7d3083c49f865fcfb2b9e7cdc574d3a
+  OpenIMSDKCore: 002ccd940d261619d117eedcb8e6236aae718aaa
   package_info_plus: 115f4ad11e0698c8c1c5d8a689390df880f47e85
   path_provider_foundation: 3784922295ac71e43754bd15e0653ccfd36a147c
   permission_handler_apple: 036b856153a2b1f61f21030ff725f3e6fece2b78

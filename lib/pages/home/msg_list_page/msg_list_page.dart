@@ -2,7 +2,6 @@ import 'package:easy_refresh/easy_refresh.dart';
 import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:mall_community/components/easy_refresh_diy/easy_refresh_diy.dart';
 import 'package:mall_community/pages/home/msg_list_page/components/friends.dart';
 import 'package:mall_community/pages/home/msg_list_page/components/groups.dart';
 import 'package:mall_community/pages/home/msg_list_page/components/top_bar.dart';
@@ -41,41 +40,28 @@ class _MsgListPageState extends State<MsgListPage>
 
   @override
   Widget build(BuildContext context) {
-    return EasyRefresh.builder(
-      onLoad: () {
-        chatController.getMore(tabController.index);
+    return ExtendedNestedScrollView(
+      onlyOneScrollInBody: true,
+      pinnedHeaderSliverHeightBuilder: () {
+        return MediaQuery.of(context).padding.top + kToolbarHeight;
       },
-      footer: footerLoading,
-      controller: chatController.easyRefreshController,
-      childBuilder: (context, physics) {
-        return ScrollConfiguration(
-          behavior: const ERScrollBehavior(),
-          child: ExtendedNestedScrollView(
-            physics: physics,
-            onlyOneScrollInBody: true,
-            pinnedHeaderSliverHeightBuilder: () {
-              return MediaQuery.of(context).padding.top + kToolbarHeight;
-            },
-            headerSliverBuilder: (context, innerBoxIsScrolled) {
-              return <Widget>[TopBar(tabController: tabController, tabs: tabs)];
-            },
-            body: Container(
-              margin: const EdgeInsets.only(top: 10),
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(14)),
-              ),
-              child: TabBarView(
-                controller: tabController,
-                children: [
-                  FirendMsgList(physics: physics),
-                  FriendList(physics: physics),
-                  GroupList(physics: physics),
-                ],
-              ),
-            ),
-          ),
-        );
+      headerSliverBuilder: (context, innerBoxIsScrolled) {
+        return <Widget>[TopBar(tabController: tabController, tabs: tabs)];
       },
+      body: Container(
+        margin: const EdgeInsets.only(top: 10),
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(14)),
+        ),
+        child: TabBarView(
+          controller: tabController,
+          children: [
+            FirendMsgList(),
+            FriendList(),
+            GroupList(),
+          ],
+        ),
+      ),
     );
   }
 

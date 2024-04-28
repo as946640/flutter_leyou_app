@@ -1,20 +1,25 @@
+import 'dart:async';
+
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_swipe_action_cell/core/cell.dart';
 import 'package:get/get.dart';
 import 'package:mall_community/common/comm_style.dart';
 import 'package:mall_community/components/automatic_keep_alive/automatic_keep_alive.dart';
 import 'package:mall_community/components/avatar/avatar.dart';
+import 'package:mall_community/components/custom_badge/custom_badge.dart';
+import 'package:mall_community/components/easy_refresh_diy/easy_refresh_diy.dart';
 import 'package:mall_community/components/loading/loading.dart';
-import 'package:mall_community/modules/user_module.dart';
 import 'package:mall_community/pages/home/msg_list_page/controller/msg_list_module.dart';
 import 'package:mall_community/utils/time_util.dart';
 
 ///好友消息列表
 class FirendMsgList extends StatelessWidget {
-  FirendMsgList({super.key, required this.physics});
-  final ScrollPhysics physics;
+  FirendMsgList({super.key});
   final MsgListModule msgListModule = Get.find();
 
   @override
@@ -22,15 +27,22 @@ class FirendMsgList extends StatelessWidget {
     return ExtendedVisibilityDetector(
       uniqueKey: const Key('msgList'),
       child: MyAutomaticKeepAlive(
-        child: LoadingPage(
-          fetch: msgListModule.getMsgList,
-          empty: '还没有人给你发消息呢~',
-          child: Obx(
-            () => ListView.builder(
-              physics: physics,
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
-              itemCount: msgListModule.msgList.length,
-              itemBuilder: (ctx, i) => buildItem(i),
+        child: EasyRefresh(
+          onLoad: () {
+            msgListModule.getMore();
+          },
+          footer: footerLoading,
+          controller: msgListModule.easyRefreshController,
+          child: LoadingPage(
+            fetch: msgListModule.getMsgList,
+            empty: '还没有人给你发消息呢~',
+            stream: msgListModule.streamController.stream,
+            child: Obx(
+              () => ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                itemCount: msgListModule.msgList.length,
+                itemBuilder: (ctx, i) => buildItem(i),
+              ),
             ),
           ),
         ),
@@ -39,53 +51,49 @@ class FirendMsgList extends StatelessWidget {
   }
 
   buildItem(int i) {
-    Map msg = msgListModule.msgList[i];
-    // 这里的 user 是对方的信息
-    Map user = UserInfo.isMy(msg['userId']) ? msg['toUser'] : msg['user'];
+    ConversationInfo msg = msgListModule.msgList[i];
 
     return SwipeActionCell(
       key: ValueKey(i),
       trailingActions: getCellNav(i),
       child: ListTile(
-          onTap: () {
-            msgListModule.toChat(user);
-          },
-          leading: MyAvatar(
-            src: user['avatar'],
-            radius: 50,
-            size: 50.r,
-            nums: user['online'] == 1 ? "1" : "",
+        onTap: () {
+          // msgListModule.toChat();
+        },
+        leading: MyAvatar(
+          src: "${msg.faceURL}",
+          radius: 50,
+          size: 50.r,
+        ),
+        title: Text(
+          msg.showName ?? "",
+          style: tx14.copyWith(
+            color: primaryTextC,
+            fontWeight: FontWeight.bold,
           ),
-          title: Text(
-            user['userName'],
-            style: tx14.copyWith(
-              color: primaryTextC,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          subtitle: Row(
-            children: [
-              SizedBox(
-                width: 120,
-                child: Text(
-                  msg['content'],
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: tx12.copyWith(
-                    color: HexThemColor(primaryTextC, direction: 2),
-                  ),
-                ),
-              ),
-              Text(
-                TimeUtil.formatTime(msg['time']),
+        ),
+        subtitle: Row(
+          children: [
+            Expanded(
+              child: Text(
+                msg.latestMsg?.textElem?.content ?? "",
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: tx12.copyWith(
                   color: HexThemColor(primaryTextC, direction: 2),
                 ),
               ),
-            ],
-          )
-          // trailing: MyBadge(value: msg['content'].length),
-          ),
+            ),
+            Text(
+              TimeUtil.formatTime(msg.latestMsgSendTime),
+              style: tx12.copyWith(
+                color: HexThemColor(primaryTextC, direction: 2),
+              ),
+            ),
+          ],
+        ),
+        trailing: MyBadge(value: msg.unreadCount),
+      ),
     );
   }
 

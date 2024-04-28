@@ -107,6 +107,7 @@ dependencies:
   logger: ^2.2.0
   # 蓝牙插件
   flutter_blue_plus: ^1.31.17
+  flutter_openim_sdk: ^3.5.1
 
 dev_dependencies:
   flutter_test:

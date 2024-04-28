@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart' as dio;
+import 'package:mall_community/common/app_config.dart';
 import 'package:mall_community/modules/user_module.dart';
+import 'package:mall_community/utils/request/dio.dart';
 import 'package:mall_community/utils/request/dio_response.dart';
 import 'package:mall_community/utils/request/error_exception.dart';
 import 'package:mall_community/utils/request/white_api.dart';
@@ -10,7 +12,8 @@ class LoggingInterceptor extends dio.InterceptorsWrapper {
   void onRequest(
       dio.RequestOptions options, dio.RequestInterceptorHandler handler) {
     options.headers['authorization'] = UserInfo.token;
-    if (options.method == 'GET' || options.method == 'PUT') {
+    options.headers['operationID'] = AppConfig.operationID;
+    if (options.method == Method.get || options.method == Method.put) {
       // options.queryParameters ?? {};
       // options.queryParameters['app_id'] = ApiConfig.appId;
     } else {

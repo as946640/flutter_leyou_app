@@ -46,10 +46,12 @@ class LoadingPage extends StatefulWidget {
     required this.child,
     this.showEmpty = true,
     this.empty = '',
+    this.stream,
   });
 
   /// 请求函数
-  final Future<ApiResponse> Function() fetch;
+  /// 返回一个状态 状态值对应 NetWorkDataStatus 枚举
+  final Future<int> Function() fetch;
 
   /// 是否显示缺省状态|无数据
   final bool showEmpty;
@@ -59,6 +61,9 @@ class LoadingPage extends StatefulWidget {
 
   /// 加载成功渲染的组件
   final Widget child;
+
+  /// 流控制器
+  final Stream? stream;
   @override
   State<LoadingPage> createState() => _LoadingPageState();
 }
@@ -70,16 +75,10 @@ class _LoadingPageState extends State<LoadingPage> {
 
   getData() async {
     try {
-      ApiResponse result = await widget.fetch.call();
+      int result = await widget.fetch.call();
       status = NetWorkDataStatus.loadingOK;
       if (widget.showEmpty) {
-        if (result.data is List && result.data.lenth == 0) {
-          status = NetWorkDataStatus.notData;
-        } else if (result.data is Map &&
-            result.data.containsKey('list') &&
-            result.data['list'].length == 0) {
-          status = NetWorkDataStatus.notData;
-        }
+        status = result;
       }
       // 延迟500ms加载 请求状态切换太快会闪烁
       Future.delayed(const Duration(milliseconds: 500), () {
@@ -108,6 +107,11 @@ class _LoadingPageState extends State<LoadingPage> {
     super.initState();
     key = UniqueKey();
     getData();
+    widget.stream?.listen((event) {
+      if (event == 'refresh') {
+        getData();
+      }
+    });
   }
 
   @override

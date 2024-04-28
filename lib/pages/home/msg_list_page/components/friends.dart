@@ -1,5 +1,6 @@
 import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mall_community/common/comm_style.dart';
@@ -10,8 +11,7 @@ import 'package:mall_community/pages/home/msg_list_page/controller/msg_list_modu
 
 ///好友列表
 class FriendList extends StatelessWidget {
-  FriendList({super.key, required this.physics});
-  final ScrollPhysics physics;
+  FriendList({super.key});
   final MsgListModule msgListModule = Get.find();
 
   @override
@@ -25,7 +25,6 @@ class FriendList extends StatelessWidget {
           child: Obx(
             () => ListView.builder(
               itemExtent: 70,
-              physics: physics,
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
               itemCount: msgListModule.friends.length,
               itemBuilder: (context, i) => buildItem(i),
@@ -37,23 +36,22 @@ class FriendList extends StatelessWidget {
   }
 
   buildItem(int i) {
-    Map msg = msgListModule.friends[i]['user'];
+    FullUserInfo userInfo = msgListModule.friends[i];
     return Container(
       alignment: Alignment.center,
       height: 70,
       child: ListTile(
         onTap: () {
-          msgListModule.toChat(msg);
+          // msgListModule.toChat(msg);
         },
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
         leading: MyAvatar(
-          src: msg['avatar'],
+          src: userInfo.faceURL,
           radius: 50.r,
           size: 50.r,
-          nums: msg['onLine'] == 1 ? "1" : "",
         ),
         title: Text(
-          msg['userName'],
+          "${userInfo.nickname}",
           style: tx18.copyWith(
             color: HexThemColor(primaryTextC, direction: 2),
             fontWeight: FontWeight.bold,

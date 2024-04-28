@@ -1,28 +1,20 @@
 import 'package:get/get.dart';
-import 'package:mall_community/pages/chat/pages/call_video/call_video.dart';
-import 'package:mall_community/pages/chat/pages/message/message.dart';
-import 'package:mall_community/pages/home/home_table.dart';
-import 'package:mall_community/pages/login/login.dart';
-import 'package:mall_community/pages/map_search/map_search.dart';
-import 'package:mall_community/pages/privacy_statement/privacy_statement.dart';
 
 class AppPages {
-  static final List<GetPage> pages = [
-    // 首页
-    GetPage(name: '/home', page: () => const HomeTabblePage()),
-    GetPage(name: '/login', page: () => LoginPage()),
+  static const String home = "/home";
+  static const String login = "/login";
+  static const String privacyStatement = "/privacyStatement";
+  static const String chat = "/chat";
+  static const String callVideo = "/chat/call";
+  static const String map = "/map";
+}
 
-    GetPage(
-      name: '/privacyStatement',
-      page: () => const PrivacyStatementPage(),
-    ),
-
-    // 好友模块
-    GetPage(name: '/chat', page: () => MessageListPage(), children: [
-      GetPage(name: "/call_video", page: () => const CallVieoPage())
-    ]),
-
-    // 地图
-    GetPage(name: '/map', page: () => const MapPage()),
-  ];
+List<GetPage> getRouters(List<Map<String, dynamic>> list) {
+  return list.map((e) {
+    return GetPage(
+      name: e['name'],
+      page: e['page'],
+      children: e.containsKey('children') ? getRouters(e['children']) : [],
+    );
+  }).toList();
 }

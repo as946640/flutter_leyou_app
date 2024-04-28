@@ -1,13 +1,15 @@
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mall_community/common/app_locale.dart';
 import 'package:mall_community/common/theme.dart';
 import 'package:mall_community/components/easy_refresh_diy/easy_refresh_diy.dart';
 import 'package:mall_community/controller/global_base_socket.dart';
+import 'package:mall_community/controller/open_im_controller.dart';
 import 'package:mall_community/router/router.dart';
+import 'package:mall_community/router/router_pages.dart';
 import 'common/app_config.dart';
 
 class MyApp extends StatefulWidget {
@@ -20,6 +22,7 @@ class MyApp extends StatefulWidget {
 class _MyappState extends State<MyApp> {
   final FlutterLocalization localization = FlutterLocalization.instance;
   final BaseSocket baseSocket = Get.put(BaseSocket());
+  // var routers = getRouters(kApprouters);
 
   @override
   void initState() {
@@ -48,22 +51,27 @@ class _MyappState extends State<MyApp> {
       builder: (BuildContext context, child) {
         setEasyRefreshDeafult();
         return GetMaterialApp(
-          // initialBinding: ActionInjector(),
-          getPages: AppPages.pages,
-          title: '乐悠云社',
+          getPages: getRouters(kApprouters),
+          title: AppConfig.appTitle,
           initialRoute: AppConfig.privacyStatementHasAgree
               ? '/home'
-              : '/privacyStatement',
+              : "/privacyStatement",
           showPerformanceOverlay: false,
           theme: AppTheme.primaryTheme,
           themeMode: AppTheme.mode,
           darkTheme: AppTheme.darkTheme,
           builder: EasyLoading.init(),
-          defaultTransition: Transition.rightToLeftWithFade,
+          defaultTransition: Transition.native,
           supportedLocales: localization.supportedLocales,
           localizationsDelegates: localization.localizationsDelegates,
         );
       },
     );
+  }
+
+  @override
+  void dispose() {
+    OpenImController.unInitSDK();
+    super.dispose();
   }
 }

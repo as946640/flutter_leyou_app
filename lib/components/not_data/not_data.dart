@@ -109,6 +109,9 @@ class NetWorkDataStatus {
   /// 没有消息
   static const notMsg = 4;
 
+  /// 没有更多数据
+  static const notMoreData = 5;
+
   ///未登录
   static const notLogin = 401;
 
