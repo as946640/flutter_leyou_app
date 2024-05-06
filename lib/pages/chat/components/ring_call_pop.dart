@@ -24,8 +24,8 @@ class RingCallPop extends StatelessWidget {
     }).toMap();
     OverlayManager().removeOverlay(uniK);
     ChatController controller = Get.find<ChatController>();
-    controller.sendMsg(jsonEncode(msg), type: MessageType.callPhone);
-    controller.socket.sendMessage(SocketEvent.rejectPhone, data: msg);
+    // controller.sendMsg(jsonEncode(msg), type: MessageType.callPhone);
+    // controller.socket.sendMessage(SocketEvent.rejectPhone, data: msg);
   }
 
   answer() {

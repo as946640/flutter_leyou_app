@@ -1,15 +1,19 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mall_community/common/comm_style.dart';
 import 'package:mall_community/components/avatar/avatar.dart';
 import 'package:mall_community/components/pop_menu/pop_menu.dart';
 import 'package:mall_community/components/text_span/text_span.dart';
-import 'package:mall_community/pages/chat/module/message_module.dart';
+// import 'package:mall_community/pages/chat/module/message_module.dart';
 import 'package:mall_community/pages/chat/controller/chat_controller.dart';
+import 'package:mall_community/pages/chat/module/message_module.dart';
+import 'package:mall_community/pages/chat/pages/message/components/msg_type_widget/file_%20progress.dart';
 import 'package:mall_community/pages/chat/pages/message/components/msg_type_widget/call_video.dart';
 import 'package:mall_community/pages/chat/pages/message/components/msg_type_widget/file_msg.dart';
 import 'package:mall_community/pages/chat/pages/message/components/msg_type_widget/image_msg.dart';
@@ -32,7 +36,7 @@ class MessageBox extends StatelessWidget {
     required this.toolBarKey,
   });
 
-  final SendMsgModule item;
+  final Message item;
   final String avatar;
   final bool isMy;
   final UniqueKey toolBarKey;
@@ -80,13 +84,14 @@ class MessageBox extends StatelessWidget {
 
   // 文本复制
   void copyText() async {
-    if (item.messageType == MessageType.text) {
+    if (item.contentType == MessageType.text) {
       // 文本是否有选中的
       if (textSelection != null) {
         await Clipboard.setData(
             ClipboardData(text: textSelection?.plainText ?? ''));
       } else {
-        await Clipboard.setData(ClipboardData(text: item.content));
+        await Clipboard.setData(
+            ClipboardData(text: item.textElem?.content ?? ""));
       }
       OverlayManager().removeOverlay(toolBarKey);
       closeFocusNode();
@@ -121,7 +126,7 @@ class MessageBox extends StatelessWidget {
                 mainAxisAlignment:
                     isMy ? MainAxisAlignment.end : MainAxisAlignment.start,
                 children: [
-                  if (item.status == CustomMsgStatus.sending)
+                  if (item.status == MessageStatus.sending)
                     const Padding(
                       padding: EdgeInsets.only(bottom: 4),
                       child: SizedBox(
@@ -132,7 +137,7 @@ class MessageBox extends StatelessWidget {
                         ),
                       ),
                     ),
-                  if (item.status == CustomMsgStatus.fail)
+                  if (item.status == MessageStatus.failed)
                     TextButton(
                         onPressed: () {},
                         child: Text(
@@ -169,10 +174,10 @@ class MessageBox extends StatelessWidget {
   }
 
   msgWidget() {
-    if (item.messageType == MessageType.text) {
+    if (item.contentType == MessageType.text) {
       return msgBox(
         TextSpanEmoji(
-          text: item.content,
+          text: item.textElem?.content ?? '',
           key: textSpanEmojiKey,
           style: tx14.copyWith(
             color: isMy ? Colors.white : Colors.black87,
@@ -198,41 +203,46 @@ class MsgTypeWidget extends StatelessWidget {
     required this.isMy,
     required this.msgKey,
   });
-  final SendMsgModule item;
+  final Message item;
   final bool isMy;
   final GlobalKey msgKey;
   final GlobalKey textSpanEmojiKey = GlobalKey();
 
-  final Map<String, Widget Function(SendMsgModule, bool, GlobalKey)>
-      msgTypeWidget = {
-    MessageType.image: (item, isMy, key) => ImageMsg(
+  final Map<String, Widget Function(Message, bool, GlobalKey)> msgTypeWidget = {
+    MessageType.picture.toString(): (item, isMy, key) => ImageMsg(
           item: item,
           isMy: isMy,
           key: key,
         ),
-    MessageType.file: (item, isMy, key) =>
+    MessageType.file.toString(): (item, isMy, key) =>
         FileMsg(item: item, isMy: isMy, key: key),
-    MessageType.voice: (item, isMy, key) =>
+    MessageType.voice.toString(): (item, isMy, key) =>
         VoiceMsg(isMy: isMy, item: item, key: key),
-    MessageType.location: (item, isMy, key) =>
+    MessageType.location.toString(): (item, isMy, key) =>
         LocationMsg(item: item, key: key),
-    MessageType.reply: (item, isMy, key) =>
+    MessageType.quote.toString(): (item, isMy, key) =>
         ReplyMsg(item: item, isMy: isMy, msgKey: key),
-    MessageType.video: (item, isMy, key) => VideoMsg(
+    MessageType.video.toString(): (item, isMy, key) => VideoMsg(
           item: item,
           isMy: isMy,
           key: key,
         ),
-    MessageType.callPhone: (item, isMy, key) =>
-        CallPhoneMsg(item: item, isMy: isMy)
+    CusMessageType.process.toString(): (item, isMy, key) => ImFileProgress(
+          item: item,
+          progress:
+              json.decode(item.customElem?.data ?? "{}")['progress'] ?? 0.0,
+        ),
   };
 
   @override
   Widget build(BuildContext context) {
-    Widget Function(
-            SendMsgModule p1, bool p2, GlobalKey<State<StatefulWidget>> p3)?
-        fun = msgTypeWidget[item.messageType];
-    if (fun != null) {
+    String type = item.contentType.toString();
+    if (item.contentType == MessageType.custom) {
+      type = json.decode(item.customElem!.data ?? "{}")['type'].toString();
+    }
+    Widget Function(Message p1, bool p2, GlobalKey<State<StatefulWidget>> p3)?
+        fun = msgTypeWidget[type];
+    if (fun != null && type.isNotEmpty) {
       return fun.call(item, isMy, msgKey);
     }
     return const SizedBox();

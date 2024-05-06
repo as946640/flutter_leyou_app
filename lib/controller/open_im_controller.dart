@@ -19,6 +19,10 @@ class OpenImController extends IMCallback {
   }
 
   OpenImController._internal();
+  static IMManager get iMManager => OpenIM.iMManager;
+  static MessageManager get msgManager => OpenIM.iMManager.messageManager;
+  static FriendshipManager get friendshipManager =>
+      OpenIM.iMManager.friendshipManager;
 
   /// sdk 初始化状态
   static IMSdkStatus status = IMSdkStatus.connecting;
@@ -38,14 +42,17 @@ class OpenImController extends IMCallback {
       listener: OnConnectListener(
         onConnectSuccess: () {
           Log.debug("ImServer 连接成功");
+          OpenImController.status = IMSdkStatus.connectionSucceeded;
           imSdkStatus(IMSdkStatus.connectionSucceeded);
         },
         onConnecting: () {
           Log.debug("ImServer  正在连接到服务器");
+          OpenImController.status = IMSdkStatus.connecting;
           imSdkStatus(IMSdkStatus.connecting);
         },
         onConnectFailed: (code, errorMsg) {
           Log.debug("ImServer  连接服务器失败");
+          OpenImController.status = IMSdkStatus.connectionFailed;
           imSdkStatus(IMSdkStatus.connectionFailed);
         },
         onKickedOffline: kickedOffline,
@@ -59,7 +66,7 @@ class OpenImController extends IMCallback {
         // 消息监听
         ..messageManager.setAdvancedMsgListener(OnAdvancedMsgListener(
           onRecvC2CReadReceipt: onRecvC2CReadReceipt,
-          onRecvNewMessage: onRecvNewMessage,
+          onRecvNewMessage: recvNewMessage,
           onNewRecvMessageRevoked: recvMessageRevoked,
         ))
         ..messageManager.setMsgSendProgressListener(OnMsgSendProgressListener(
@@ -86,13 +93,13 @@ class OpenImController extends IMCallback {
           onNewConversation: newConversation,
           onTotalUnreadMessageCountChanged: totalUnreadMsgCountChanged,
           onSyncServerFailed: () {
-            // imSdkStatus(IMSdkStatus.syncFailed);
+            imSdkStatus(IMSdkStatus.syncFailed);
           },
           onSyncServerFinish: () {
-            // imSdkStatus(IMSdkStatus.syncEnded);
+            imSdkStatus(IMSdkStatus.syncEnded);
           },
           onSyncServerStart: () {
-            // imSdkStatus(IMSdkStatus.syncStart);
+            imSdkStatus(IMSdkStatus.syncStart);
           },
         ))
         // 群组监听
@@ -127,6 +134,9 @@ class OpenImController extends IMCallback {
           userID: userId,
           token: res.data['token'],
         );
+
+        // 默认添加官方测试账号
+        // OpenImController.friendshipManager.addFriend(userID: "7891625336");
         Log.debug("im 登录成功");
         return userInfo;
       }

@@ -12,11 +12,11 @@ class AppConfig {
   /// openIm server api
   static String openApi = isProduction()
       ? '${host}8.138.91.219:10002'
-      : '${host}192.168.219.111:10002';
+      : '${host}8.138.91.219:10002';
 
   /// openIm chat wss
   static String openChatWss =
-      isProduction() ? 'ws://8.138.91.219:10001' : 'ws://192.168.219.111:10001';
+      isProduction() ? 'ws://8.138.91.219:10001' : 'ws://8.138.91.219:10001';
 
   /// openIm 全局链路追踪ID
   static String get operationID =>
@@ -41,7 +41,7 @@ class AppConfig {
   static bool privacyStatementHasAgree = true;
 
   /// 百度地图 ios key
-  static const String amapIosKey = "";
+  static const String amapIosKey = "VE5RJxtPuSqV9eTtId3sY9WtGxd9pjUV";
 
   /// 百度地图 android key
   static const String amapAndroidKey = "";

@@ -58,7 +58,12 @@ class FirendMsgList extends StatelessWidget {
       trailingActions: getCellNav(i),
       child: ListTile(
         onTap: () {
-          // msgListModule.toChat();
+          msgListModule.toChat(
+            msg.conversationID,
+            msg.userID!,
+            avatar: msg.faceURL,
+            title: msg.showName,
+          );
         },
         leading: MyAvatar(
           src: "${msg.faceURL}",

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mall_community/common/comm_style.dart';
 import 'package:mall_community/common/theme.dart';
 import 'package:mall_community/components/loading/loading.dart';
-import 'package:mall_community/modules/user_module.dart';
-import 'package:mall_community/pages/chat/module/message_module.dart';
+import 'package:mall_community/modules/user_module.dart' as user;
 import 'package:mall_community/pages/chat/controller/chat_controller.dart';
 import 'package:mall_community/pages/chat/pages/message/components/bottom_input/bottom_input.dart';
 import 'package:mall_community/pages/chat/pages/message/components/msg_type_widget/message_box.dart';
@@ -27,7 +27,7 @@ class _MessageListState extends State<MessageList> {
 
   // 首次监听消息列表渲染完毕
   _msgNextTick() {
-    if (chatController.params['page'] == 1) {
+    if (chatController.lastMinSeq == 0) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         chatController.checkListExceed();
       });
@@ -97,11 +97,12 @@ class _MessageListState extends State<MessageList> {
     );
   }
 
-  Widget buildItem(SendMsgModule item, {int? i}) {
-    bool isMy = chatController.isMy(item.userId);
+  Widget buildItem(Message item, {int? i}) {
+    bool isMy = chatController.isMy(item.sendID!);
     return MessageBox(
       isMy: isMy,
-      avatar: isMy ? UserInfo.user['avatar'] : chatController.params['avatar'],
+      avatar:
+          isMy ? user.UserInfo.user['avatar'] : chatController.params['avatar'],
       item: item,
       toolBarKey: chatController.toolBarKey,
     );

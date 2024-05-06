@@ -1,5 +1,4 @@
 import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
-import 'package:mall_community/controller/open_im_controller.dart';
 import 'package:mall_community/utils/event_bus/event_bus.dart';
 import 'package:mall_community/utils/log/log.dart';
 
@@ -35,7 +34,6 @@ class IMCallback {
   Function(BlacklistInfo u)? onBlacklistDeleted;
 
   void imSdkStatus(IMSdkStatus status) {
-    OpenImController.status = status;
     EventBus.fire(ImCallbackEvent.imSdkStatus, status);
   }
 

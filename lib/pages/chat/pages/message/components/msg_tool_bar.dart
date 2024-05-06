@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mall_community/common/comm_style.dart';
@@ -20,7 +21,7 @@ class MsgToolBar extends StatefulWidget {
 
   final bool isMy;
   final UniqueKey toolBarKey;
-  final SendMsgModule item;
+  final Message item;
   final Function copyText;
 
   @override
@@ -39,14 +40,14 @@ class _MsgToolBarState extends State<MsgToolBar> {
   }
 
   msgQuote() {
-    if (widget.item.messageType == MessageType.reply) {
-      ToastUtils.showToast('回复消息不支持再次引用', position: 'bottom');
-      return;
-    }
-    ChatController chatC = Get.find();
-    chatC.quoteMsg.value = widget.item;
-    chatC.showInput();
-    OverlayManager().removeOverlay(widget.toolBarKey);
+    // if (widget.item.messageType == MessageType.reply) {
+    //   ToastUtils.showToast('回复消息不支持再次引用', position: 'bottom');
+    //   return;
+    // }
+    // ChatController chatC = Get.find();
+    // chatC.quoteMsg.value = widget.item;
+    // chatC.showInput();
+    // OverlayManager().removeOverlay(widget.toolBarKey);
   }
 
   msgRevoke() {
@@ -68,7 +69,8 @@ class _MsgToolBarState extends State<MsgToolBar> {
 
   @override
   void initState() {
-    if (widget.isMy && TimeUtil.timeDiffer(widget.item.time).inMinutes < 3) {
+    if (widget.isMy &&
+        TimeUtil.timeDiffer(widget.item.sendTime).inMinutes < 3) {
       list.add(
           {'title': '撤回', "icon": const IconData(0xe60f, fontFamily: 'micon')});
     }

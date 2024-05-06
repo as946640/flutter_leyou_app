@@ -233,7 +233,7 @@ class _MsgInputState extends State<MsgInput> {
   /// 发送消息
   sendMsg() {
     if (widget.message.isEmpty) return;
-    widget.chatController.sendMsg(widget.message);
+    widget.chatController.createTextMsg(widget.message);
     CustomFieldModule.controller.clear();
     Future.delayed(Duration.zero, () {
       widget.setMessage('');

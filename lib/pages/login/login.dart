@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mall_community/api/login.dart';
+import 'package:mall_community/common/app_config.dart';
 import 'package:mall_community/common/comm_style.dart';
+import 'package:mall_community/controller/open_im_controller.dart';
 import 'package:mall_community/modules/user_module.dart';
+import 'package:mall_community/pages/chat/api/auth.dart';
 import 'package:mall_community/utils/storage.dart';
 import 'package:mall_community/utils/toast/toast.dart';
 
@@ -21,6 +24,17 @@ class LoginPage extends StatelessWidget {
     var reuslt = await reqLogin(form);
     UserInfo.token = reuslt.data['token'];
     UserInfo.setUser = reuslt.data['user'];
+    // await reqOpenImRegister({
+    //   "secret": AppConfig.openImSecret,
+    //   "users": [
+    //     {
+    //       "userID": UserInfo.user['userId'],
+    //       "nickname": UserInfo.user['userName'],
+    //       "faceURL": UserInfo.user['avatar']
+    //     }
+    //   ]
+    // });
+    await OpenImController.login(UserInfo.user['userId']);
     Storage().write('user_info', reuslt.data['user']);
     Storage().write('token', reuslt.data['token']);
     Get.back();

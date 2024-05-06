@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mall_community/components/new_work_image_widget/new_work_image_widget.dart';
 import 'package:mall_community/pages/chat/controller/chat_controller.dart';
-import 'package:mall_community/pages/chat/module/message_module.dart';
 
 class ImageMsg extends StatelessWidget {
   ImageMsg({
@@ -13,7 +13,7 @@ class ImageMsg extends StatelessWidget {
     required this.item,
   });
 
-  final SendMsgModule item;
+  final Message item;
   final bool isMy;
   final UniqueKey uniqueKey = UniqueKey();
 
@@ -24,7 +24,7 @@ class ImageMsg extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FileMsgInfo fileMsgInfo = FileMsgInfo(jsonDecode(item.content));
+    PictureElem fileMsgInfo = item.pictureElem!;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 10),
@@ -37,15 +37,15 @@ class ImageMsg extends StatelessWidget {
       ),
       child: GestureDetector(
         onTap: () {
-          tap(fileMsgInfo.content);
+          // tap(fileMsgInfo.content);
         },
         child: Hero(
-          tag: "key_${item.time}",
+          tag: "key_${item.clientMsgID}",
           placeholderBuilder: (context, heroSize, child) {
             return child;
           },
           child: NetWorkImg(
-            fileMsgInfo.content,
+            fileMsgInfo.snapshotPicture?.url ?? "",
             fit: BoxFit.contain,
             raduis: 10,
           ),

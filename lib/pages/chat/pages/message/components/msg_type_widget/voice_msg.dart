@@ -1,15 +1,15 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
-import 'package:mall_community/pages/chat/module/message_module.dart';
 import 'package:mall_community/utils/sound_recording/sound_recording.dart';
 
 class VoiceMsg extends StatefulWidget {
   const VoiceMsg({super.key, required this.item, required this.isMy});
 
-  final SendMsgModule item;
+  final Message item;
   final bool isMy;
 
   @override
@@ -18,10 +18,11 @@ class VoiceMsg extends StatefulWidget {
 
 class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
   late final AnimationController _controller;
-  late final FileMsgInfo fileMsgInfo;
+  late final FileElem fileMsgInfo;
+
   bool isPlay = false;
   play() {
-    if (fileMsgInfo.content.isNotEmpty) {
+    if (fileMsgInfo.sourceUrl != null) {
       if (isPlay) {
         SoundRecording().stopPlayer();
         _controller.stop();
@@ -34,11 +35,7 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
         isPlay = true;
       });
       _controller.repeat();
-
-      String path = fileMsgInfo.content.contains("ap-guangzhou.myqcloud.com")
-          ? 'https://${fileMsgInfo.content}'
-          : fileMsgInfo.content;
-      SoundRecording().player(path, (status, {position}) {
+      SoundRecording().player(fileMsgInfo.sourceUrl!, (status, {position}) {
         if (status == PlayerStatus.finished) {
           _controller.stop();
           setState(() {
@@ -52,10 +49,10 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    fileMsgInfo = FileMsgInfo(jsonDecode(widget.item.content));
+    fileMsgInfo = widget.item.fileElem!;
     _controller = AnimationController(
       vsync: this,
-      value: fileMsgInfo.fileSize / 100,
+      value: fileMsgInfo.fileSize!.toDouble(),
       duration: const Duration(seconds: 2),
       reverseDuration: const Duration(seconds: 2),
     );

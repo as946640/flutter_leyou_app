@@ -57,6 +57,7 @@ class AppTheme {
       titleTextStyle: TextStyle(fontSize: 16.sp),
       shadowColor: Colors.transparent,
       iconTheme: appBarIconThem,
+      scrolledUnderElevation: 0,
     ),
     buttonTheme: ButtonThemeData(
       buttonColor: primaryColor,

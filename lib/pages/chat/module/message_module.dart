@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:flutter_openim_sdk/flutter_openim_sdk.dart' as im;
 import 'package:mall_community/modules/user_module.dart';
 import 'package:mall_community/pages/chat/controller/chat_controller.dart';
 
@@ -32,7 +34,7 @@ class SendMsgModule {
         json['content'] is Map ? jsonEncode(json['content']) : json['content'];
     if (quote != null) {
       content = jsonEncode({'content': content, 'quote': quote.toJson()});
-      messageType = MessageType.reply;
+      // messageType = CusMessageType.quote;
     }
     friendId = json['friendId'];
     userId = json['userId'] ?? "";
@@ -99,7 +101,7 @@ class QuoteMsgDto extends SendMsgModule {
     Map textData = jsonDecode(json['content']);
     content = textData['content'] ?? '';
     quote = SendMsgModule(textData['quote']);
-    messageType = MessageType.reply;
+    // messageType = im.MessageType.quote;
   }
 
   @override
@@ -205,41 +207,8 @@ class CallIceCandidate {
   }
 }
 
-/// IM 消息类型
-class MessageType {
-  /// 文本
-  static const String text = 'text';
-
-  /// 图片
-  static const String image = 'image';
-
-  /// 文件
-  static const String file = 'file';
-
-  /// 语音
-  static const String voice = 'voice';
-
-  /// 视频
-  static const String video = 'video';
-
-  /// 位置
-  static const String location = 'location';
-
-  /// 名片
-  static const String card = 'card';
-
-  /// 红包
-  static const String redPacket = 'redPacket';
-
-  /// 红包
-  static const String transfer = 'transfer';
-
-  /// 红包
-  static const String system = 'system';
-
-  /// 回复
-  static const String reply = 'reply';
-
-  /// 视频通话消息
-  static const String callPhone = 'callPhone';
+/// IM 自定义消息类型
+class CusMessageType {
+  // 自定义消息 进度条消息
+  static const process = 200;
 }

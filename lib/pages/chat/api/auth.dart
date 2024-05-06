@@ -13,3 +13,13 @@ Future<ApiResponse<Map>> reqOpenImToken(data) {
     baseUrl: AppConfig.openApi,
   );
 }
+
+/// oepnIm 注册
+Future<ApiResponse<Map>> reqOpenImRegister(data) {
+  return apiClient.request(
+    url: '/user/user_register',
+    data: data,
+    method: Method.post,
+    baseUrl: AppConfig.openApi,
+  );
+}

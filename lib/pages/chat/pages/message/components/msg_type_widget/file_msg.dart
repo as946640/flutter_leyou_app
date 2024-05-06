@@ -1,14 +1,14 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mall_community/common/comm_style.dart';
 import 'package:mall_community/components/file_icon/file_icon.dart';
-import 'package:mall_community/pages/chat/module/message_module.dart';
 
 class FileMsg extends StatelessWidget {
   const FileMsg({super.key, required this.item, required this.isMy});
 
-  final SendMsgModule item;
+  final Message item;
   final bool isMy;
 
   getIcon(String name) {}
@@ -27,7 +27,7 @@ class FileMsg extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FileMsgInfo fileMsgInfo = FileMsgInfo(jsonDecode(item.content));
+    FileElem fileMsgInfo = item.fileElem!;
     return Container(
       width: 200.w,
       margin: const EdgeInsets.symmetric(horizontal: 10),

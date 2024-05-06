@@ -7,16 +7,21 @@ import 'package:mall_community/api/chat/chat.dart';
 import 'package:mall_community/components/not_data/not_data.dart';
 import 'package:mall_community/controller/im_callback.dart';
 import 'package:mall_community/controller/open_im_controller.dart';
+import 'package:mall_community/router/router.dart';
 import 'package:mall_community/utils/event_bus/event_bus.dart';
+import 'package:mall_community/utils/log/log.dart';
 
 /// 好友和群数据module
 class MsgListModule extends GetxController {
   final StreamController streamController = StreamController();
   final loading = false.obs;
+  bool reload = false;
 
   Future<int> getData(Future<int> Function() fetch) async {
     if (OpenImController.status == IMSdkStatus.connectionSucceeded) {
-      return await fetch();
+      int result = await fetch();
+      reload = false;
+      return result;
     } else if (OpenImController.status == IMSdkStatus.connectionFailed) {
       return NetWorkDataStatus.notError;
     } else {
@@ -35,7 +40,11 @@ class MsgListModule extends GetxController {
       if (list.isEmpty) {
         return NetWorkDataStatus.notMoreData;
       }
-      msgList.addAll(list);
+      if (reload) {
+        msgList.value = list;
+      } else {
+        msgList.addAll(list);
+      }
       return NetWorkDataStatus.loadingOK;
     });
   }
@@ -48,7 +57,11 @@ class MsgListModule extends GetxController {
       if (list.isEmpty) {
         return NetWorkDataStatus.notData;
       }
-      friends.addAll(list);
+      if (reload) {
+        friends.value = list;
+      } else {
+        friends.addAll(list);
+      }
       return NetWorkDataStatus.loadingOK;
     });
   }
@@ -61,7 +74,11 @@ class MsgListModule extends GetxController {
       if (list.isEmpty) {
         return NetWorkDataStatus.notData;
       }
-      groups.addAll(list);
+      if (reload) {
+        groups.value = list;
+      } else {
+        groups.addAll(list);
+      }
       return NetWorkDataStatus.loadingOK;
     });
   }
@@ -76,17 +93,24 @@ class MsgListModule extends GetxController {
     // }
   }
 
-  toChat(user) {
-    Get.toNamed('/chat', arguments: {
-      'userId': user['userId'],
-      'avatar': user['avatar'],
-      'userName': user['userName'],
+  toChat(
+    String sessionId,
+    String userId, {
+    String? avatar = '',
+    String? title = '',
+  }) {
+    Get.toNamed(AppPages.chat, arguments: {
+      'sesId': sessionId,
+      'friendId': userId,
+      'avatar': avatar,
+      'title': title,
     });
   }
 
   // im sdk状态
   imStatusChange(status) {
     if (status == IMSdkStatus.connectionSucceeded) {
+      reload = true;
       streamController.add('refresh');
     }
   }
@@ -94,6 +118,7 @@ class MsgListModule extends GetxController {
   // 会话更新
   onConversationChanged(List<ConversationInfo> list) {
     for (var item in list) {
+      Log.debug("会话更新  ${item.conversationID}");
       int inx = msgList.indexWhere(
         (element) => element.conversationID == item.conversationID,
       );

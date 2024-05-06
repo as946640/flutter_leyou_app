@@ -1,16 +1,16 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mall_community/components/new_work_image_widget/new_work_image_widget.dart';
-import 'package:mall_community/pages/chat/module/message_module.dart';
 import 'package:mall_community/utils/utils.dart';
 
 /// 视频消息
 class VideoMsg extends StatelessWidget {
   VideoMsg({super.key, required this.item, required this.isMy});
 
-  final SendMsgModule item;
+  final Message item;
   final bool isMy;
   String? id;
 
@@ -20,7 +20,7 @@ class VideoMsg extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FileMsgInfo fileMsgInfo = FileMsgInfo(jsonDecode(item.content));
+    VideoElem fileMsgInfo = item.videoElem!;
     id ??= UniqueKey().toString();
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 10),
@@ -33,10 +33,10 @@ class VideoMsg extends StatelessWidget {
       ),
       child: GestureDetector(
         onTap: () {
-          tap(context, fileMsgInfo.content, fileMsgInfo.cover);
+          // tap(context, fileMsgInfo.content, fileMsgInfo.cover);
         },
         child: Hero(
-            tag: "${fileMsgInfo.cover}?id=$id",
+            tag: item.clientMsgID ?? "",
             placeholderBuilder: (context, heroSize, child) {
               return child;
             },
@@ -44,7 +44,7 @@ class VideoMsg extends StatelessWidget {
               alignment: Alignment.center,
               children: [
                 NetWorkImg(
-                  fileMsgInfo.cover,
+                  fileMsgInfo.snapshotUrl ?? "",
                   fit: BoxFit.contain,
                   raduis: 10,
                 ),

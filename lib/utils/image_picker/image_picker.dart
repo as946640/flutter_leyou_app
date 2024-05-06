@@ -78,7 +78,12 @@ Future<Map?> selectVideouploadFile() async {
     if (list[0].thumbPath != null) {
       String cosUrl = await UploadDio.upload(list[0].path);
       String coverUrl = await UploadDio.upload(list[0].thumbPath!);
-      cosResult = {"cover": coverUrl, "url": cosUrl};
+      cosResult = {
+        "cover": coverUrl,
+        "url": cosUrl,
+        'path': list[0].path,
+        'size': list[0].size
+      };
     }
     return cosResult;
   } catch (e) {

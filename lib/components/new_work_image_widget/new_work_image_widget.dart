@@ -115,6 +115,10 @@ class _NewWorkImgState extends State<NetWorkImg> {
         height: widget.height,
         color: Colors.grey.shade300,
         alignment: Alignment.center,
+        child: const CircularProgressIndicator(
+          color: Colors.white,
+          strokeCap: StrokeCap.round,
+        ),
       ),
     );
   }

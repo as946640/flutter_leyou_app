@@ -15,7 +15,7 @@ class ApiResponse<T> {
     msg = json['msg'] is List
         ? json['msg'].join()
         : json['msg'] ?? json['errMsg'] ?? '';
-    data = json['data'];
+    data = json['data'] ?? {};
   }
 
   Map<String, dynamic> toJson() {

@@ -91,7 +91,7 @@ class CallVideoController extends GetxController {
       chatController.sendMsg(
         jsonEncode(msg),
         toUserId: params['friendId'],
-        type: MsgType.MessageType.callPhone,
+        // type: CusMessageType.,
       );
     }
     Get.back();

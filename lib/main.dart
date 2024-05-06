@@ -5,6 +5,7 @@ import 'package:mall_community/common/app_config.dart';
 import 'package:mall_community/controller/open_im_controller.dart';
 import 'package:mall_community/modules/user_module.dart';
 import 'package:mall_community/utils/location/location.dart';
+import 'package:mall_community/utils/log/log.dart';
 import 'package:mall_community/utils/storage.dart';
 
 void main() async {
@@ -27,6 +28,7 @@ init() async {
   }
   OpenImController().init();
   if (UserInfo.token.isNotEmpty && UserInfo.user['userId'] != null) {
-    OpenImController.login("4105058103");
+    Log.debug("im 登录 ${UserInfo.user['userId']}");
+    OpenImController.login(UserInfo.user['userId']);
   }
 }

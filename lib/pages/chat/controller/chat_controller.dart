@@ -1,15 +1,13 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_openim_sdk/flutter_openim_sdk.dart' as im;
 import 'package:get/get.dart';
-import 'package:mall_community/components/drag_bottom_dismiss/drag_bottom_dismiss_dialog.dart';
+import 'package:mall_community/controller/im_callback.dart';
+import 'package:mall_community/controller/open_im_controller.dart';
 import 'package:mall_community/modules/user_module.dart';
-import 'package:mall_community/pages/chat/api/msg.dart';
-import 'package:mall_community/pages/chat/module/message_module.dart';
-import 'package:mall_community/pages/preview_image/preview_image.dart';
-import 'package:mall_community/utils/socket/socket_event.dart';
-import 'package:mall_community/utils/socket/socket.dart';
+import 'package:mall_community/pages/chat/controller/msg_controller.dart';
+import 'package:mall_community/utils/log/log.dart';
 
 /// 前端自己维护的消息状态
 enum CustomMsgStatus {
@@ -24,6 +22,7 @@ enum CustomMsgStatus {
 }
 
 class ChatController extends GetxController {
+  late ChatMsgController msgController;
   ScrollController scrollControll = ScrollController();
   // 工具栏key
   UniqueKey toolBarKey = UniqueKey();
@@ -31,8 +30,6 @@ class ChatController extends GetxController {
   FocusNode textFocusNode = FocusNode();
   // 文本选择聚焦
   FocusNode textSelectFocusNode = FocusNode();
-  // socket
-  late SocketManager socket;
   // 标题
   final title = ''.obs;
   // 是否处于底部
@@ -41,60 +38,81 @@ class ChatController extends GetxController {
   RxBool listRxceed = false.obs;
   // 来电通知key
   UniqueKey callPopKey = UniqueKey();
-
   // 历史消息
-  RxList<SendMsgModule> msgHistoryList = <SendMsgModule>[].obs;
-  var params = {};
-  int total = 0;
+  RxList<im.Message> msgHistoryList = RxList([]);
+  Map params = {};
+  int lastMinSeq = 0;
+  bool isEnd = false;
   final loading = false.obs;
 
   /// 获取历史消息
   getHistoryMsg() async {
     try {
-      params['page'] += 1;
       loading.value = true;
-      var result = await reqMessages(params);
-      total = result.data['total'];
-      if (result.data['list'].length > 0) {
-        List<SendMsgModule> list = [];
-        result.data['list'].forEach((item) {
-          list.add(SendMsgModule(item));
-        });
-        msgHistoryList.addAll(list);
-      }
+      im.AdvancedMessage data = await msgController.getHistoryMsg(
+        params['sesId'],
+        startMsg: msgHistoryList.isEmpty ? null : msgHistoryList.first,
+        lastMinSeq: lastMinSeq,
+      );
+      msgHistoryList.addAll(data.messageList?.reversed ?? []);
+      isEnd = data.isEnd ?? false;
+      lastMinSeq = data.lastMinSeq ?? 0;
       loading.value = false;
     } finally {
-      debugPrint('请求完毕');
       loading.value = false;
     }
   }
 
   // 新消息数组
-  RxList<SendMsgModule> newMsgList = <SendMsgModule>[].obs;
+  RxList<im.Message> newMsgList = <im.Message>[].obs;
   // 新消息数量
   RxInt newMsgNums = 0.obs;
   // 引用消息回复消息
-  Rx<SendMsgModule?> quoteMsg = Rx<SendMsgModule?>(null);
+  Rx<im.Message?> quoteMsg = Rx<im.Message?>(null);
 
   /// 发送消息
-  void sendMsg(String msg, {String type = 'text', String? socketEventType}) {
-    Map msgData = {
-      'content': msg,
-      'userId': UserInfo.user['userId'],
-      'friendId': params['friendId'],
-      'messageType': type
-    };
-    var data = SendMsgModule(msgData, quote: quoteMsg.value);
-    data.status = CustomMsgStatus.sending;
-    socket.sendMessage(
-      socketEventType ?? SocketEvent.friendMessage,
-      data: data.toJson(),
-    );
-    addMsg(data);
+  Future sendMsg(im.Message msg, {im.Message? progressMsg}) async {
+    bool isFileMsg = msg.contentType == im.MessageType.picture ||
+        msg.contentType == im.MessageType.video ||
+        msg.contentType == im.MessageType.file;
+    try {
+      im.Message newMsg;
+      // 是否是文件类消息 文件消息直接替换进度条消息即可
+      if (isFileMsg) {
+        String type = msg.contentType == im.MessageType.picture ? '图片' : '视频';
+        newMsg = await OpenImController.msgManager.sendMessageNotOss(
+          message: msg,
+          userID: params['friendId'],
+          offlinePushInfo: im.OfflinePushInfo(
+            title: "$type消息",
+            desc: "对方给你发送了$type",
+          ),
+        );
+        setFileMsgStatus(msg, im.MessageStatus.succeeded, progressMsg!);
+      } else {
+        addMsg(msg);
+        newMsg = await msgController.send(msg, params['friendId']);
+        setMsgStatus(msg, im.MessageStatus.succeeded, newMsg: newMsg);
+      }
+    } catch (e) {
+      Log.error('发送消息失败$e');
+      if (isFileMsg) {
+        setFileMsgStatus(msg, im.MessageStatus.failed, progressMsg!);
+      } else {
+        setMsgStatus(msg, im.MessageStatus.failed, e: e);
+      }
+    }
+  }
+
+  /// 发送文本消息 因为要在很多地方使用到，所以提取出来
+  void createTextMsg(String t) async {
+    im.Message msg =
+        await OpenImController.msgManager.createTextMessage(text: t);
+    sendMsg(msg);
   }
 
   /// 追加消息
-  void addMsg(SendMsgModule data) {
+  void addMsg(im.Message data) {
     newMsgList.add(data);
     if (isBottom.value) {
       toBottom();
@@ -103,13 +121,46 @@ class ChatController extends GetxController {
     }
   }
 
+  /// 消息错误处理
+
   /// 设置消息状态
-  setMsgStatus(CustomMsgStatus status, msgTime) {
-    int inx = newMsgList.indexWhere((item) => item.time == msgTime);
-    if (inx != -1) {
-      SendMsgModule newMsg = newMsgList[inx];
-      newMsg.status = status;
-      newMsgList[inx] = newMsg;
+  setMsgStatus(
+    im.Message message,
+    status, {
+    Object? e,
+    im.Message? newMsg,
+  }) async {
+    message.status = status;
+    if (newMsg != null) {
+      message.update(newMsg);
+    }
+    if (e != null) {
+      if (e is PlatformException) {
+        int code = int.tryParse(e.code) ?? 0;
+        final hintMessage = (await msgController.createHitMessage(code))
+          ..status = 2
+          ..isRead = true;
+        newMsgList.add(hintMessage);
+        await msgController.insertLocalMessage(hintMessage, params['friendId']);
+      }
+    }
+    newMsgList.refresh();
+  }
+
+  /// 设置文件消息状态 比如图片视频那些
+  /// 上传成功 根据消息id 直接替换文件消息
+  /// 上传失败 直接更新状态即可
+  setFileMsgStatus(im.Message message, status, im.Message progressMsg) {
+    int inx = newMsgList
+        .indexWhere((item) => item.clientMsgID == progressMsg.clientMsgID);
+    im.Message proressMsg = newMsgList[inx];
+    if (status == im.MessageStatus.succeeded) {
+      if (inx != -1) {
+        message.status = status;
+        newMsgList[inx] = message;
+      }
+    } else {
+      proressMsg.status = status;
     }
   }
 
@@ -121,52 +172,63 @@ class ChatController extends GetxController {
 
   /// 预览图片
   previewImage(url) async {
-    List<Map<String, dynamic>> imgs = [];
-    List<SendMsgModule> msgList = [...newMsgList, ...msgHistoryList];
-    for (var i = 0; i < msgList.length; i++) {
-      var item = msgList[i];
-      if (item.messageType == MessageType.image) {
-        FileMsgInfo fileMsgInfo = FileMsgInfo(jsonDecode(item.content));
-        imgs.add({
-          "url": fileMsgInfo.content,
-          'key': "key_${item.time}",
-        });
-      }
+    // List<Map<String, dynamic>> imgs = [];
+    // List<SendMsgModule> msgList = [...newMsgList, ...msgHistoryList];
+    // for (var i = 0; i < msgList.length; i++) {
+    //   var item = msgList[i];
+    //   if (item.messageType == MessageType.image) {
+    //     FileMsgInfo fileMsgInfo = FileMsgInfo(jsonDecode(item.content));
+    //     imgs.add({
+    //       "url": fileMsgInfo.content,
+    //       'key': "key_${item.time}",
+    //     });
+    //   }
+    // }
+    // int inx = imgs.indexWhere((item) => item['url'] == url);
+    // await Navigator.push(
+    //   Get.context!,
+    //   DragBottomDismissDialog(
+    //     builder: (context) {
+    //       return PreviewImage(
+    //         pics: imgs,
+    //         current: inx == -1 ? 0 : inx,
+    //       );
+    //     },
+    //   ),
+    // );
+  }
+
+  onRecvNewMessage(im.Message msg) {
+    if (msg.sendID == params['friendId']) {
+      addMsg(msg);
     }
-    int inx = imgs.indexWhere((item) => item['url'] == url);
-    await Navigator.push(
-      Get.context!,
-      DragBottomDismissDialog(
-        builder: (context) {
-          return PreviewImage(
-            pics: imgs,
-            current: inx == -1 ? 0 : inx,
-          );
-        },
-      ),
-    );
+  }
+
+  onSyncStatusChanged(IMSdkStatus status) {
+    switch (status) {
+      case IMSdkStatus.syncStart:
+        debugPrint('开始同步');
+        break;
+      case IMSdkStatus.syncEnded:
+        debugPrint('同步结束');
+        newMsgList.refresh();
+        break;
+      case IMSdkStatus.syncFailed:
+        debugPrint('同步失败');
+        break;
+      default:
+    }
   }
 
   initEvent() {
-    // 加入私聊成功
-    socket.subscribe(SocketEvent.joinFriendSocket, (res) {});
-    // 接收好友消息
-    socket.subscribe(SocketEvent.friendMessage, (data) {
-      Map? result = data['data'];
-      if (result != null) {
-        data = SendMsgModule(result);
-      }
-      if (data.userId == params['userId']) {
-        addMsg(data);
-      } else {
-        setMsgStatus(CustomMsgStatus.success, data.time);
-      }
-    });
+    msgController = ChatMsgController(
+      onRecvNewMessage: onRecvNewMessage,
+      onSyncStatusChanged: onSyncStatusChanged,
+    );
   }
 
   void closeEvent() {
-    socket.unSubscribe(SocketEvent.joinFriendSocket);
-    socket.unSubscribe(SocketEvent.friendMessage);
+    msgController.close();
   }
 
   ///是否是自己
@@ -205,7 +267,6 @@ class ChatController extends GetxController {
 
   /// 消息列表超出屏幕检测
   checkListExceed() {
-    // double extentTotal = scrollControll.position.extentTotal;
     double extentInside = scrollControll.position.extentInside;
     offSet.value = (scrollControll.position.extentBefore) / extentInside;
   }
@@ -215,7 +276,7 @@ class ChatController extends GetxController {
     double extentAfter = scrollControll.position.extentAfter;
     double extentBefore = scrollControll.position.extentBefore;
     if (extentBefore == 0) {
-      if (!loading.value && params['page'] >= 1) {
+      if (!loading.value && lastMinSeq > 0 && !isEnd) {
         getHistoryMsg();
       }
     }
@@ -233,12 +294,7 @@ class ChatController extends GetxController {
     super.onInit();
     scrollControll.addListener(_scrollListener);
     params = Get.arguments;
-    params['friendId'] = params['userId'];
-    params['pageSize'] = 15;
-    params['page'] = 0;
-    title.value = params['userName'];
-    socket = SocketManager(token: UserInfo.token);
-    socket.addRoom(params['friendId']);
+    title.value = params['title'];
     initEvent();
     await getHistoryMsg();
   }

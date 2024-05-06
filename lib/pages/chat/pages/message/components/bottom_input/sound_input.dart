@@ -95,29 +95,29 @@ class _SoundInputState extends State<SoundInput> {
   send(SoundResuelt? soundResuelt) async {
     // 先追加
     if (soundResuelt != null) {
-      if (soundResuelt.second <= 1) {
-        return ToastUtils.showToast('说话时间太短了', type: 'error');
-      }
-      var data = SendMsgModule({
-        'content': soundResuelt.toJson(),
-        'userId': UserInfo.user['userId'],
-        'friendId': widget.chatController.params['friendId'],
-        'messageType': MessageType.voice,
-      });
-      widget.chatController.newMsgList.add(data);
-      widget.chatController.toBottom();
+      // if (soundResuelt.second <= 1) {
+      //   return ToastUtils.showToast('说话时间太短了', type: 'error');
+      // }
+      // var data = SendMsgModule({
+      //   'content': soundResuelt.toJson(),
+      //   'userId': UserInfo.user['userId'],
+      //   'friendId': widget.chatController.params['friendId'],
+      //   'messageType': MessageType.voice,
+      // });
+      // widget.chatController.newMsgList.add(data);
+      // widget.chatController.toBottom();
 
-      // 上传完再发送
-      var result = await SoundRecording().uploadSound(soundResuelt.url);
-      if (result == null) {
-        ToastUtils.showToast('上传录音错误 请稍后再试');
-        return;
-      }
-      var content = jsonDecode(data.content);
-      content['url'] = result['url'];
-      data.content = jsonEncode(content);
-      widget.chatController.socket
-          .sendMessage(SocketEvent.friendMessage, data: data.toJson());
+      // // 上传完再发送
+      // var result = await SoundRecording().uploadSound(soundResuelt.url);
+      // if (result == null) {
+      //   ToastUtils.showToast('上传录音错误 请稍后再试');
+      //   return;
+      // }
+      // var content = jsonDecode(data.content);
+      // content['url'] = result['url'];
+      // data.content = jsonEncode(content);
+      // widget.chatController.socket
+      //     .sendMessage(SocketEvent.friendMessage, data: data.toJson());
     }
   }
 
