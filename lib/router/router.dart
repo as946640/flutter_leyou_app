@@ -6,6 +6,8 @@ class AppPages {
   static const String privacyStatement = "/privacyStatement";
   static const String chat = "/chat";
   static const String callVideo = "/chat/call";
+  static const String chatSetting = "/chat/setting";
+
   static const String map = "/map";
 }
 

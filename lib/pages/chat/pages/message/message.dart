@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:mall_community/common/comm_style.dart';
-import 'package:mall_community/common/theme.dart';
 import 'package:mall_community/pages/chat/controller/chat_controller.dart';
 import 'package:mall_community/pages/chat/pages/message/components/bottom_input/bottom_input.dart';
 import 'package:mall_community/pages/chat/pages/message/components/list.dart';
@@ -19,28 +18,14 @@ class MessageListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Obx(() => Text(chatController.title.value)),
-      //   centerTitle: true,
-      //   elevation: 0,
-      //   surfaceTintColor: Colors.transparent,
-      //   backgroundColor: Colors.transparent,
-      //   systemOverlayStyle: const SystemUiOverlayStyle(
-      //     statusBarColor: Colors.transparent,
-      //     statusBarIconBrightness: Brightness.light,
-      //   ),
-      //   iconTheme: IconThemeData(
-      //     color:
-      //         AppTheme.mode == ThemeMode.dark ? Colors.white : Colors.black87,
-      //   ),
-      //   titleTextStyle: TextStyle(
-      //     color:
-      //         AppTheme.mode == ThemeMode.dark ? Colors.white : Colors.black87,
-      //   ),
-      // ),
       appBar: getAppBar(
-        title: Obx(() => Text(chatController.title.value)),
-      ),
+          title: Obx(() => Text(chatController.title.value)),
+          actions: [
+            IconButton(
+              onPressed: chatController.toSetting,
+              icon: const Icon(Icons.more_horiz_rounded),
+            )
+          ]),
       extendBody: true,
       resizeToAvoidBottomInset: false,
       body: Column(
@@ -59,11 +44,10 @@ class MessageListPage extends StatelessWidget {
 
   Widget filterWidget({
     Widget? child,
-    double sigmaX = 400,
-    double sigmaY = 100,
+    double sigmaX = 80,
+    double sigmaY = 200,
   }) {
     return ClipRect(
-      //背景模糊化
       child: BackdropFilter(
         filter: ImageFilter.blur(
           sigmaX: sigmaX,
@@ -101,7 +85,6 @@ class MessageListPage extends StatelessWidget {
           ),
           surfaceTintColor: Colors.transparent,
           backgroundColor: Colors.transparent,
-          foregroundColor: Colors.transparent,
           systemOverlayStyle: const SystemUiOverlayStyle(
             statusBarColor: Colors.transparent,
             statusBarIconBrightness: Brightness.light,

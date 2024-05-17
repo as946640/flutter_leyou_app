@@ -1,4 +1,5 @@
 import 'package:mall_community/pages/chat/pages/call_video/call_video.dart';
+import 'package:mall_community/pages/chat/pages/chat_setting/chat_setting.dart';
 import 'package:mall_community/pages/chat/pages/message/message.dart';
 import 'package:mall_community/pages/home/home_table.dart';
 import 'package:mall_community/pages/login/login.dart';
@@ -18,8 +19,12 @@ List<Map<String, dynamic>> kApprouters = [
     "page": () => MessageListPage(),
     "children": [
       {
-        "name": AppPages.callVideo,
+        "name": '/callVideo',
         "page": () => const CallVieoPage(),
+      },
+      {
+        "name": '/setting',
+        "page": () => const ChatSetting(),
       }
     ]
   },

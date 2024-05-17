@@ -20,14 +20,20 @@ class AppTheme {
 
   /// 黑色
   static final darkTheme = ThemeData(
-    brightness: Brightness.dark,
     primaryColor: primaryColor,
+    colorScheme: const ColorScheme.light(
+      background: Colors.white,
+      brightness: Brightness.light,
+    ),
     visualDensity: VisualDensity.adaptivePlatformDensity,
     appBarTheme: AppBarTheme(
       color: primaryNavColor,
-      titleTextStyle: TextStyle(fontSize: 16.sp),
+      titleTextStyle: TextStyle(fontSize: 16.sp, color: primaryTextC),
       shadowColor: Colors.transparent,
-      iconTheme: appBarIconThem,
+      iconTheme: IconThemeData(
+        color: primaryTextC,
+        size: 24.sp,
+      ),
     ),
     buttonTheme: ButtonThemeData(
       buttonColor: primaryColor,
@@ -48,15 +54,18 @@ class AppTheme {
 
   /// 橙色
   static final primaryTheme = ThemeData(
-    brightness: Brightness.light,
-    visualDensity: VisualDensity.adaptivePlatformDensity,
     primaryColor: primaryColor,
+    colorScheme: const ColorScheme.light(
+      background: Colors.white,
+      brightness: Brightness.light,
+    ),
+    visualDensity: VisualDensity.adaptivePlatformDensity,
     splashColor: backgroundColor, // 点击水波纹的颜色
     appBarTheme: AppBarTheme(
-      color: primaryNavColor,
-      titleTextStyle: TextStyle(fontSize: 16.sp),
+      color: Colors.white,
+      titleTextStyle: TextStyle(fontSize: 16.sp,color: primaryTextC),
       shadowColor: Colors.transparent,
-      iconTheme: appBarIconThem,
+      iconTheme: appBarIconThem.copyWith(color: primaryTextC),
       scrolledUnderElevation: 0,
     ),
     buttonTheme: ButtonThemeData(

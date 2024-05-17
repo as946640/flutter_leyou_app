@@ -9,6 +9,7 @@ import 'package:mall_community/controller/open_im_controller.dart';
 import 'package:mall_community/modules/user_module.dart';
 import 'package:mall_community/pages/chat/controller/msg_controller.dart';
 import 'package:mall_community/pages/preview_image/preview_image.dart';
+import 'package:mall_community/router/router.dart';
 import 'package:mall_community/utils/log/log.dart';
 
 /// 前端自己维护的消息状态
@@ -201,6 +202,11 @@ class ChatController extends GetxController {
         },
       ),
     );
+  }
+
+  ///消息设置
+  toSetting(){
+    Get.toNamed(AppPages.chatSetting);
   }
 
   onRecvNewMessage(im.Message msg) {
