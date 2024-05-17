@@ -84,6 +84,7 @@ class _NewWorkImgState extends State<NetWorkImg> {
                 cache: widget.isCache,
                 retries: widget.loadNum,
                 excludeFromSemantics: true,
+                borderRadius: BorderRadius.all(Radius.circular(widget.raduis)),
                 gaplessPlayback: true, //切换前保留原图 防止返回闪动重新渲染
                 alignment: widget.alignment,
                 loadStateChanged: (ExtendedImageState state) {

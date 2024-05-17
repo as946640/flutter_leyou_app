@@ -34,6 +34,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   # UI组件
   bruno: ^3.4.3
+  # 状态管理和路由
   get: ^4.6.6
   # 网络请求
   dio: ^5.4.0
@@ -47,8 +48,6 @@ dependencies:
   flutter_cache_manager: ^3.3.1
   # socket io
   socket_io_client: ^2.0.3+1
-  # 国际化本地化
-  flutter_localization: ^0.2.0
   # 时间工具
   date_time_format: ^2.0.1
   # 下拉刷新

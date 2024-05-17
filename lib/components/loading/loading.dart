@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mall_community/common/comm_style.dart';
 import 'package:mall_community/components/not_data/not_data.dart';
-import 'package:mall_community/utils/request/dio_response.dart';
 import 'package:mall_community/utils/request/error_exception.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 

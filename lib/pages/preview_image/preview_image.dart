@@ -1,6 +1,7 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mall_community/components/drag_bottom_dismiss/drag_bottom_pop_sheet.dart';
+import 'package:mall_community/components/new_work_image_widget/new_work_image_widget.dart';
 import 'package:mall_community/utils/image_picker/image_picker.dart';
 import 'package:mall_community/utils/utils.dart';
 
@@ -14,7 +15,7 @@ class PreviewImage extends StatefulWidget {
     ],
     this.onLongPressDown,
   });
-  final List<Map<String, dynamic>> pics;
+  final List<Pics> pics;
   final List<Map<String, dynamic>> menus;
   final Function(Map)? onLongPressDown;
   final int current;
@@ -36,7 +37,7 @@ class _PreviewImage2State extends State<PreviewImage> {
         widget.onLongPressDown?.call(data);
         switch (data['title']) {
           case '保存到相册':
-            saveNetWorkImg(widget.pics[currentIndex]['url']);
+            saveNetWorkImg(widget.pics[currentIndex].url);
             break;
           default:
         }
@@ -67,15 +68,17 @@ class _PreviewImage2State extends State<PreviewImage> {
             ),
             child: PageView.builder(
               itemBuilder: (BuildContext context, int index) {
-                Widget image = ExtendedImage.network(
-                  widget.pics[index]['url'],
-                  fit: BoxFit.contain,
-                  mode: ExtendedImageMode.none,
+                Widget image = NetWorkImg(
+                  widget.pics[index].url,
+                  raduis: 10,
                 );
-
-                /// 这里是全部Hero 还是当前点击的图片Hero 开发者自行决定
                 return Hero(
-                  tag: widget.pics[index]['key'],
+                  tag: widget.pics[index].key,
+                  flightShuttleBuilder: (flightContext, animation,
+                      flightDirection, fromHeroContext, toHeroContext) {
+                    if (index == currentIndex) return image;
+                    return const SizedBox();
+                  },
                   child: image,
                 );
               },
@@ -92,5 +95,17 @@ class _PreviewImage2State extends State<PreviewImage> {
         ),
       ),
     );
+  }
+}
+
+class Pics {
+  late String url;
+  late String key;
+  late String cover;
+
+  Pics(Map<String, String> json) {
+    url = json['url'] ?? "";
+    key = json['key'] ?? "";
+    cover = json['cover'] ?? "";
   }
 }

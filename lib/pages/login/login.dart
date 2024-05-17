@@ -7,7 +7,6 @@ import 'package:mall_community/common/app_config.dart';
 import 'package:mall_community/common/comm_style.dart';
 import 'package:mall_community/controller/open_im_controller.dart';
 import 'package:mall_community/modules/user_module.dart';
-import 'package:mall_community/pages/chat/api/auth.dart';
 import 'package:mall_community/utils/storage.dart';
 import 'package:mall_community/utils/toast/toast.dart';
 
@@ -24,6 +23,7 @@ class LoginPage extends StatelessWidget {
     var reuslt = await reqLogin(form);
     UserInfo.token = reuslt.data['token'];
     UserInfo.setUser = reuslt.data['user'];
+    // 先在本地临时注册 后期服务端会同步注册
     // await reqOpenImRegister({
     //   "secret": AppConfig.openImSecret,
     //   "users": [

@@ -1,17 +1,12 @@
 import 'dart:async';
-import 'dart:io';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:mall_community/components/button/button.dart';
-import 'package:mall_community/components/loading/loading.dart';
 import 'package:mall_community/pages/bluetooth/bluetooth_pop.dart';
 import 'package:mall_community/pages/bluetooth/characteristic_tile.dart';
 import 'package:mall_community/pages/bluetooth/descriptor_tile.dart';
 import 'package:mall_community/pages/bluetooth/server_title.dart';
 import 'package:mall_community/utils/log/log.dart';
-import 'package:mall_community/utils/toast/toast.dart';
 
 class BluetoothPage extends StatefulWidget {
   const BluetoothPage({super.key});

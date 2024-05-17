@@ -1,9 +1,6 @@
-import 'dart:async';
-
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_swipe_action_cell/core/cell.dart';
@@ -28,24 +25,24 @@ class FirendMsgList extends StatelessWidget {
       uniqueKey: const Key('msgList'),
       child: MyAutomaticKeepAlive(
         child: EasyRefresh(
-          onLoad: () {
-            msgListModule.getMore();
-          },
-          footer: footerLoading,
-          controller: msgListModule.easyRefreshController,
-          child: LoadingPage(
-            fetch: msgListModule.getMsgList,
-            empty: '还没有人给你发消息呢~',
-            stream: msgListModule.streamController.stream,
+            onLoad: () {
+              msgListModule.getMore();
+            },
+            footer: footerLoading,
+            controller: msgListModule.easyRefreshController,
             child: Obx(
-              () => ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                itemCount: msgListModule.msgList.length,
-                itemBuilder: (ctx, i) => buildItem(i),
+              () => LoadingPage(
+                fetch: msgListModule.getMsgList,
+                empty: '还没有人给你发消息呢~',
+                stream: msgListModule.streamController.stream,
+                child: ListView.builder(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                  itemCount: msgListModule.msgList.length,
+                  itemBuilder: (ctx, i) => buildItem(i),
+                ),
               ),
-            ),
-          ),
-        ),
+            )),
       ),
     );
   }

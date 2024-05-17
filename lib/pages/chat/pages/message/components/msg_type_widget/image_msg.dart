@@ -37,15 +37,15 @@ class ImageMsg extends StatelessWidget {
       ),
       child: GestureDetector(
         onTap: () {
-          // tap(fileMsgInfo.content);
+          tap(fileMsgInfo.bigPicture?.url ?? "");
         },
         child: Hero(
-          tag: "key_${item.clientMsgID}",
+          tag: "${item.clientMsgID}${item.createTime}",
           placeholderBuilder: (context, heroSize, child) {
             return child;
           },
           child: NetWorkImg(
-            fileMsgInfo.snapshotPicture?.url ?? "",
+            fileMsgInfo.bigPicture?.url ?? "",
             fit: BoxFit.contain,
             raduis: 10,
           ),

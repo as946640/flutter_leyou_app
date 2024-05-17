@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
 import 'package:get/get.dart';
-import 'package:mall_community/api/chat/chat.dart';
 import 'package:mall_community/components/not_data/not_data.dart';
 import 'package:mall_community/controller/im_callback.dart';
 import 'package:mall_community/controller/open_im_controller.dart';
@@ -37,9 +36,12 @@ class MsgListModule extends GetxController {
       List<ConversationInfo> list = await OpenImController.getConversationList(
         page: params['page'],
       );
-      if (list.isEmpty) {
+      if (list.isEmpty && msgList.isEmpty) {
+        return NetWorkDataStatus.notData;
+      } else if (list.isEmpty && msgList.isNotEmpty) {
         return NetWorkDataStatus.notMoreData;
       }
+
       if (reload) {
         msgList.value = list;
       } else {
@@ -118,15 +120,17 @@ class MsgListModule extends GetxController {
   // 会话更新
   onConversationChanged(List<ConversationInfo> list) {
     for (var item in list) {
-      Log.debug("会话更新  ${item.conversationID}");
+      // Log.debug("会话更新  ${item.conversationID}");
       int inx = msgList.indexWhere(
         (element) => element.conversationID == item.conversationID,
       );
       if (inx != -1) {
         msgList[inx] = item;
       } else {
+        // Log.debug("会话更新 2 ${item.conversationID}");
         msgList.add(item);
       }
+      msgList.refresh();
     }
   }
 

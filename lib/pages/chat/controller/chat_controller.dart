@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_openim_sdk/flutter_openim_sdk.dart' as im;
 import 'package:get/get.dart';
+import 'package:mall_community/components/drag_bottom_dismiss/drag_bottom_dismiss_dialog.dart';
 import 'package:mall_community/controller/im_callback.dart';
 import 'package:mall_community/controller/open_im_controller.dart';
 import 'package:mall_community/modules/user_module.dart';
 import 'package:mall_community/pages/chat/controller/msg_controller.dart';
+import 'package:mall_community/pages/preview_image/preview_image.dart';
 import 'package:mall_community/utils/log/log.dart';
 
 /// 前端自己维护的消息状态
@@ -172,30 +174,32 @@ class ChatController extends GetxController {
 
   /// 预览图片
   previewImage(url) async {
-    // List<Map<String, dynamic>> imgs = [];
-    // List<SendMsgModule> msgList = [...newMsgList, ...msgHistoryList];
-    // for (var i = 0; i < msgList.length; i++) {
-    //   var item = msgList[i];
-    //   if (item.messageType == MessageType.image) {
-    //     FileMsgInfo fileMsgInfo = FileMsgInfo(jsonDecode(item.content));
-    //     imgs.add({
-    //       "url": fileMsgInfo.content,
-    //       'key': "key_${item.time}",
-    //     });
-    //   }
-    // }
-    // int inx = imgs.indexWhere((item) => item['url'] == url);
-    // await Navigator.push(
-    //   Get.context!,
-    //   DragBottomDismissDialog(
-    //     builder: (context) {
-    //       return PreviewImage(
-    //         pics: imgs,
-    //         current: inx == -1 ? 0 : inx,
-    //       );
-    //     },
-    //   ),
-    // );
+    List<Pics> imgs = [];
+    List<im.Message> msgList = [...newMsgList, ...msgHistoryList];
+    for (var i = 0; i < msgList.length; i++) {
+      var item = msgList[i];
+      if (item.contentType == im.MessageType.picture) {
+        im.PictureElem? imgMsg = item.pictureElem;
+        if (imgMsg != null) {
+          imgs.add(Pics({
+            "url": imgMsg.bigPicture?.url ?? "",
+            'key': "${item.clientMsgID}${item.createTime}",
+          }));
+        }
+      }
+    }
+    int inx = imgs.indexWhere((item) => item.url == url);
+    await Navigator.push(
+      Get.context!,
+      DragBottomDismissDialog(
+        builder: (context) {
+          return PreviewImage(
+            pics: imgs,
+            current: inx == -1 ? 0 : inx,
+          );
+        },
+      ),
+    );
   }
 
   onRecvNewMessage(im.Message msg) {

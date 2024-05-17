@@ -52,6 +52,8 @@ class NotDataIcon extends StatelessWidget {
         return "暂时还没人找你呢 孤单的人";
       case NetWorkDataStatus.notData:
         return "没有更多数据了呢";
+      case NetWorkDataStatus.notMoreData:
+        return "没有更多数据了";
       case NetWorkDataStatus.notNertwork:
         return '哎呀 您当前网络不可用呢';
       case NetWorkDataStatus.networkTimOut:

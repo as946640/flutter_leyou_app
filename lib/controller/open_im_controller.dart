@@ -17,10 +17,15 @@ class OpenImController extends IMCallback {
     _instance ??= OpenImController._internal();
     return _instance!;
   }
-
   OpenImController._internal();
+
+  /// im管理器
   static IMManager get iMManager => OpenIM.iMManager;
+
+  /// im 消息管理器
   static MessageManager get msgManager => OpenIM.iMManager.messageManager;
+
+  /// im 好友管理器
   static FriendshipManager get friendshipManager =>
       OpenIM.iMManager.friendshipManager;
 
@@ -39,6 +44,7 @@ class OpenImController extends IMCallback {
       wsAddr: AppConfig.openChatWss,
       dataDir: path, // 数据存储路径
       logFilePath: path,
+      logLevel: 1,
       listener: OnConnectListener(
         onConnectSuccess: () {
           Log.debug("ImServer 连接成功");
@@ -123,6 +129,7 @@ class OpenImController extends IMCallback {
   ///登录
   static Future<UserInfo?> login(String userId) async {
     try {
+      Log.debug("im 登录 $userId");
       ApiResponse<Map> res = await reqOpenImToken({
         'secret': AppConfig.openImSecret,
         'platformID': _getPlatformID(),
@@ -135,9 +142,9 @@ class OpenImController extends IMCallback {
           token: res.data['token'],
         );
 
-        // 默认添加官方测试账号
-        // OpenImController.friendshipManager.addFriend(userID: "7891625336");
         Log.debug("im 登录成功");
+        // 添加默认好友
+        // OpenImController.friendshipManager.addFriend(userID: "7668325871");
         return userInfo;
       }
       return null;
