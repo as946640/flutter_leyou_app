@@ -18,7 +18,7 @@ class VoiceMsg extends StatefulWidget {
 
 class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
   late final AnimationController _controller;
-  late final FileElem fileMsgInfo;
+  late final SoundElem fileMsgInfo;
 
   bool isPlay = false;
   play() {
@@ -49,10 +49,10 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    fileMsgInfo = widget.item.fileElem!;
+    fileMsgInfo = widget.item.soundElem!;
     _controller = AnimationController(
       vsync: this,
-      value: fileMsgInfo.fileSize!.toDouble(),
+      value: fileMsgInfo.dataSize!.toDouble(),
       duration: const Duration(seconds: 2),
       reverseDuration: const Duration(seconds: 2),
     );
@@ -88,7 +88,7 @@ class _VoiceMsgState extends State<VoiceMsg> with TickerProviderStateMixin {
               controller: _controller,
             ),
           ),
-          Text('"${fileMsgInfo.fileSize}')
+          Text('"${fileMsgInfo.duration}')
         ],
       ),
     );

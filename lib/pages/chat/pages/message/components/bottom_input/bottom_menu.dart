@@ -128,7 +128,6 @@ class ChatBottomMenu extends StatelessWidget {
             'filePath': item.thumbPath,
             "type": CusMessageType.process,
           });
-          Log.debug("进度条消息更新$progress");
           chatController.setMsgStatus(
             progressMsg,
             MessageStatus.succeeded,

@@ -8,6 +8,7 @@ import 'package:flutter_sound/flutter_sound.dart';
 import 'package:mall_community/utils/permission/permission.dart';
 import 'package:mall_community/utils/request/dio.dart';
 import 'package:mall_community/utils/toast/toast.dart';
+import 'package:mall_community/utils/tx_cos/tx_cos.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -131,25 +132,20 @@ class SoundRecording {
     return await File(path).exists();
   }
 
-  /// 上传临时录音
-  Future<Map?> uploadSound(String path) async {
-    try {
-      ApiClient apiClient = ApiClient();
-      if (await fileExists(path)) {
-        dio.MultipartFile file = dio.MultipartFile.fromFileSync(
-          path,
-          filename:
-              "${DateTime.now().microsecondsSinceEpoch}_${path.split("/").last}",
-        );
-        var result = await apiClient.uploadFile([file]);
-        return result.data['list'][0];
-      }
-      return null;
-    } catch (e) {
-      ToastUtils.showToast('上传录音错误 请稍后再试');
-      return null;
-    }
-  }
+  // /// 上传临时录音
+  // Future<String?> uploadSound(String path, {String? remotePath}) async {
+  //   try {
+  //     ApiClient apiClient = ApiClient();
+  //     if (await fileExists(path)) {
+  //       String cosUrl = await UploadDio.upload(path, remotePath: remotePath,);
+  //       return cosUrl;
+  //     }
+  //     return null;
+  //   } catch (e) {
+  //     ToastUtils.showToast('上传录音错误 请稍后再试');
+  //     return null;
+  //   }
+  // }
 
   /// 播放音频
   Future player(String path,

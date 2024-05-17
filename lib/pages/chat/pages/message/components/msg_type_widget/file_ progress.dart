@@ -47,7 +47,7 @@ class _ImFileProgressState extends State<ImFileProgress> {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            if (fileName.isEmpty) Image.asset(filePath),
+            // if (fileName.isEmpty) Image.asset(filePath),
             buildBackdropFilter(),
           ],
         ));

@@ -11,10 +11,12 @@ class UploadDio {
   static String region = 'ap-guangzhou';
 
   /// 上传文件
-  /// @param filePath 文件路径
+  /// @param 本地 filePath 文件路径
+  /// @param 远端 存储路径 默认 flutter_app 根目录  remotePath
   /// @param progressCallback 进度回调
   static Future<String> upload(
     String filePath, {
+    String? remotePath,
     ProgressCallback? progressCallback,
   }) async {
     List filePaths = filePath.split('/');
@@ -25,7 +27,8 @@ class UploadDio {
     String cosKey = ext;
     String authorization = directTransferData['tmpSecretKey'];
     String securityToken = directTransferData['sessionToken'];
-    String url = 'https://$cosHost/flutter_app/$cosKey';
+    String url =
+        'https://$cosHost/flutter_app/${remotePath!= null && remotePath.isNotEmpty ? "$remotePath/$cosKey" : cosKey}';
     File file = File(filePath);
     Options options = Options(
       method: 'PUT',

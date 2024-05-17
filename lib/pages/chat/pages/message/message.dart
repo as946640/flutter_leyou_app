@@ -1,4 +1,7 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:mall_community/common/comm_style.dart';
 import 'package:mall_community/common/theme.dart';
@@ -16,27 +19,33 @@ class MessageListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      // appBar: AppBar(
+      //   title: Obx(() => Text(chatController.title.value)),
+      //   centerTitle: true,
+      //   elevation: 0,
+      //   surfaceTintColor: Colors.transparent,
+      //   backgroundColor: Colors.transparent,
+      //   systemOverlayStyle: const SystemUiOverlayStyle(
+      //     statusBarColor: Colors.transparent,
+      //     statusBarIconBrightness: Brightness.light,
+      //   ),
+      //   iconTheme: IconThemeData(
+      //     color:
+      //         AppTheme.mode == ThemeMode.dark ? Colors.white : Colors.black87,
+      //   ),
+      //   titleTextStyle: TextStyle(
+      //     color:
+      //         AppTheme.mode == ThemeMode.dark ? Colors.white : Colors.black87,
+      //   ),
+      // ),
+      appBar: getAppBar(
         title: Obx(() => Text(chatController.title.value)),
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: AppTheme.mode == ThemeMode.dark
-            ? HexColor("#1c1b1f")
-            : Colors.white,
-        iconTheme: IconThemeData(
-          color:
-              AppTheme.mode == ThemeMode.dark ? Colors.white : Colors.black87,
-        ),
-        titleTextStyle: TextStyle(
-          color:
-              AppTheme.mode == ThemeMode.dark ? Colors.white : Colors.black87,
-        ),
       ),
       extendBody: true,
       resizeToAvoidBottomInset: false,
       body: Column(
         children: [
-           Expanded(
+          Expanded(
             child: Stack(
               alignment: Alignment.bottomRight,
               children: [const MessageList(), ToBottomPop()],
@@ -44,6 +53,61 @@ class MessageListPage extends StatelessWidget {
           ),
           MsgBotInput(key: MsgBotInputModule.bottomKey),
         ],
+      ),
+    );
+  }
+
+  Widget filterWidget({
+    Widget? child,
+    double sigmaX = 400,
+    double sigmaY = 100,
+  }) {
+    return ClipRect(
+      //背景模糊化
+      child: BackdropFilter(
+        filter: ImageFilter.blur(
+          sigmaX: sigmaX,
+          sigmaY: sigmaY,
+        ),
+        child: child,
+      ),
+    );
+  }
+
+  PreferredSizeWidget getAppBar({
+    double appHeight = 50,
+    Widget? title,
+    Widget? leading,
+    List<Widget>? actions,
+    PreferredSize? bottom,
+  }) {
+    if (actions != null) {
+      actions.add(const SizedBox(width: 8));
+    }
+    return PreferredSize(
+      preferredSize: Size.fromHeight(appHeight),
+      child: filterWidget(
+        child: AppBar(
+          title: title,
+          toolbarHeight: appHeight,
+          leading: leading,
+          leadingWidth: 80,
+          actions: actions,
+          bottom: bottom,
+          elevation: 0,
+          iconTheme: IconThemeData(color: primaryTextC),
+          titleTextStyle: TextStyle(
+            color: primaryTextC,
+          ),
+          surfaceTintColor: Colors.transparent,
+          backgroundColor: Colors.transparent,
+          foregroundColor: Colors.transparent,
+          systemOverlayStyle: const SystemUiOverlayStyle(
+            statusBarColor: Colors.transparent,
+            statusBarIconBrightness: Brightness.light,
+          ),
+          //bottom: getTitle(),
+        ),
       ),
     );
   }

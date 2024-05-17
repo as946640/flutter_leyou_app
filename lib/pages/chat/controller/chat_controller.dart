@@ -76,7 +76,8 @@ class ChatController extends GetxController {
   Future sendMsg(im.Message msg, {im.Message? progressMsg}) async {
     bool isFileMsg = msg.contentType == im.MessageType.picture ||
         msg.contentType == im.MessageType.video ||
-        msg.contentType == im.MessageType.file;
+        msg.contentType == im.MessageType.file ||
+        msg.contentType == im.MessageType.voice;
     try {
       im.Message newMsg;
       // 是否是文件类消息 文件消息直接替换进度条消息即可

@@ -2,18 +2,19 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mall_community/common/comm_style.dart';
 import 'package:mall_community/components/sound_pop/sound_pop.dart';
-import 'package:mall_community/modules/user_module.dart';
-import 'package:mall_community/pages/chat/module/message_module.dart';
+import 'package:mall_community/controller/open_im_controller.dart';
 import 'package:mall_community/pages/chat/controller/chat_controller.dart';
+import 'package:mall_community/pages/chat/module/message_module.dart';
 import 'package:mall_community/pages/chat/pages/message/components/bottom_input/waveforms.dart';
-import 'package:mall_community/utils/socket/socket_event.dart';
 import 'package:mall_community/utils/overlay_manager/overlay_manager.dart';
 import 'package:mall_community/utils/sound_recording/sound_recording.dart';
 import 'package:mall_community/utils/toast/toast.dart';
+import 'package:mall_community/utils/tx_cos/tx_cos.dart';
 
 class SoundInput extends StatefulWidget {
   const SoundInput({
@@ -95,9 +96,57 @@ class _SoundInputState extends State<SoundInput> {
   send(SoundResuelt? soundResuelt) async {
     // 先追加
     if (soundResuelt != null) {
-      // if (soundResuelt.second <= 1) {
-      //   return ToastUtils.showToast('说话时间太短了', type: 'error');
-      // }
+      if (soundResuelt.second <= 1) {
+        return ToastUtils.showToast('说话时间太短了', type: 'error');
+      }
+
+      String remotePath = "/chat/${widget.chatController.params['friendId']}";
+
+      try {
+        // 创建语音消息发送提示
+        double progress = 0.0;
+        Message progressMsg =
+            await OpenImController.msgManager.createCustomMessage(
+          data: json.encode({
+            "progress": progress,
+            'fileName': soundResuelt.url,
+            "filePath": soundResuelt.url,
+            "type": CusMessageType.process,
+          }),
+          extension: "",
+          description: "语音上传中",
+        );
+        widget.chatController.addMsg(progressMsg);
+
+        // 上传完再发送
+        String resultUrl = await UploadDio.upload(
+          soundResuelt.url,
+          remotePath: remotePath,
+          progressCallback: (count, total) {
+            progress = (count / total);
+            var newMsg = progressMsg;
+            newMsg.customElem!.data = json.encode({
+              "progress": progress,
+              'filePath': soundResuelt.url,
+              'fileName': soundResuelt.url,
+              "type": CusMessageType.process,
+            });
+            widget.chatController.setMsgStatus(
+              progressMsg,
+              MessageStatus.succeeded,
+              newMsg: newMsg,
+            );
+          },
+        );
+
+        Message msg = await OpenImController.msgManager.createSoundMessageByURL(
+            soundElem: SoundElem(
+          soundPath: soundResuelt.url,
+          sourceUrl: resultUrl,
+          duration: soundResuelt.second,
+        ));
+        await widget.chatController.sendMsg(msg, progressMsg: progressMsg);
+      } catch (e) {}
       // var data = SendMsgModule({
       //   'content': soundResuelt.toJson(),
       //   'userId': UserInfo.user['userId'],
@@ -107,12 +156,6 @@ class _SoundInputState extends State<SoundInput> {
       // widget.chatController.newMsgList.add(data);
       // widget.chatController.toBottom();
 
-      // // 上传完再发送
-      // var result = await SoundRecording().uploadSound(soundResuelt.url);
-      // if (result == null) {
-      //   ToastUtils.showToast('上传录音错误 请稍后再试');
-      //   return;
-      // }
       // var content = jsonDecode(data.content);
       // content['url'] = result['url'];
       // data.content = jsonEncode(content);
