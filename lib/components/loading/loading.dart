@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mall_community/common/comm_style.dart';
 import 'package:mall_community/components/not_data/not_data.dart';
+import 'package:mall_community/modules/user_module.dart';
 import 'package:mall_community/utils/request/error_exception.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
@@ -74,6 +75,12 @@ class _LoadingPageState extends State<LoadingPage> {
 
   getData() async {
     try {
+      if (UserInfo.token.isEmpty) {
+        setState(() {
+          status = NetWorkDataStatus.notLogin;
+        });
+        return;
+      }
       int result = await widget.fetch.call();
       status = NetWorkDataStatus.loadingOK;
       if (widget.showEmpty) {
@@ -95,11 +102,7 @@ class _LoadingPageState extends State<LoadingPage> {
     } finally {}
   }
 
-  onShow() {
-    if (status == NetWorkDataStatus.notLogin) {
-      getData();
-    }
-  }
+  onShow() {}
 
   @override
   void initState() {
@@ -131,8 +134,9 @@ class _LoadingPageState extends State<LoadingPage> {
     Function? callback;
     if (status == NetWorkDataStatus.notLogin) {
       label = '前往登录';
-      callback = () {
-        Get.toNamed('/login');
+      callback = () async {
+        await Get.toNamed('/login');
+        getData();
       };
     }
     if (status == NetWorkDataStatus.notNetworkError) {
