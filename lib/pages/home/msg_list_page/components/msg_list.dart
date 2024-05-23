@@ -51,6 +51,7 @@ class FirendMsgList extends StatelessWidget {
     ConversationInfo msg = msgListModule.msgList[i];
 
     return SwipeActionCell(
+      backgroundColor: Colors.white,
       key: ValueKey(i),
       trailingActions: getCellNav(i),
       child: ListTile(

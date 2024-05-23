@@ -24,7 +24,7 @@ List<Map<String, dynamic>> kApprouters = [
       },
       {
         "name": '/setting',
-        "page": () => const ChatSetting(),
+        "page": () => ChatSetting(),
       }
     ]
   },

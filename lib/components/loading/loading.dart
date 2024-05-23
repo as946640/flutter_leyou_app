@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mall_community/common/comm_style.dart';
 import 'package:mall_community/components/not_data/not_data.dart';
+import 'package:mall_community/modules/user_module.dart';
 import 'package:mall_community/utils/request/error_exception.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
@@ -43,6 +44,7 @@ class LoadingPage extends StatefulWidget {
     super.key,
     required this.fetch,
     required this.child,
+    this.onShow,
     this.showEmpty = true,
     this.empty = '',
     this.stream,
@@ -51,6 +53,10 @@ class LoadingPage extends StatefulWidget {
   /// 请求函数
   /// 返回一个状态 状态值对应 NetWorkDataStatus 枚举
   final Future<int> Function() fetch;
+
+  /// 页面显示
+  //
+  final Function? onShow;
 
   /// 是否显示缺省状态|无数据
   final bool showEmpty;
@@ -74,6 +80,12 @@ class _LoadingPageState extends State<LoadingPage> {
 
   getData() async {
     try {
+      if (UserInfo.token.isEmpty) {
+        setState(() {
+          status = NetWorkDataStatus.notLogin;
+        });
+        return;
+      }
       int result = await widget.fetch.call();
       status = NetWorkDataStatus.loadingOK;
       if (widget.showEmpty) {
@@ -96,9 +108,7 @@ class _LoadingPageState extends State<LoadingPage> {
   }
 
   onShow() {
-    if (status == NetWorkDataStatus.notLogin) {
-      getData();
-    }
+    widget.onShow?.call();
   }
 
   @override
@@ -131,8 +141,9 @@ class _LoadingPageState extends State<LoadingPage> {
     Function? callback;
     if (status == NetWorkDataStatus.notLogin) {
       label = '前往登录';
-      callback = () {
-        Get.toNamed('/login');
+      callback = () async {
+        await Get.toNamed('/login');
+        getData();
       };
     }
     if (status == NetWorkDataStatus.notNetworkError) {

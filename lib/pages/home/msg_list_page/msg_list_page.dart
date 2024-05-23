@@ -1,6 +1,7 @@
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mall_community/pages/home/msg_list_page/components/friends.dart';
 import 'package:mall_community/pages/home/msg_list_page/components/groups.dart';
@@ -30,9 +31,6 @@ class _MsgListPageState extends State<MsgListPage>
   void initState() {
     super.initState();
     tabController = TabController(length: tabs.length, vsync: this);
-    tabController.addListener(() {
-      chatController.easyRefreshController.resetFooter();
-    });
     chatController.easyRefreshController = EasyRefreshController(
       controlFinishLoad: true,
     );
@@ -40,25 +38,25 @@ class _MsgListPageState extends State<MsgListPage>
 
   @override
   Widget build(BuildContext context) {
-    return ExtendedNestedScrollView(
-      onlyOneScrollInBody: true,
-      pinnedHeaderSliverHeightBuilder: () {
-        return MediaQuery.of(context).padding.top + kToolbarHeight;
-      },
-      headerSliverBuilder: (context, innerBoxIsScrolled) {
-        return <Widget>[TopBar(tabController: tabController, tabs: tabs)];
-      },
+    return Scaffold(
       body: Container(
-        margin: const EdgeInsets.only(top: 10),
+        padding: EdgeInsets.only(top: ScreenUtil().statusBarHeight),
         decoration: const BoxDecoration(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(14)),
+          color: Colors.white,
         ),
-        child: TabBarView(
-          controller: tabController,
+        child: Column(
           children: [
-            FirendMsgList(),
-            FriendList(),
-            GroupList(),
+            TopBar(tabController: tabController, tabs: tabs),
+            Expanded(
+              child: TabBarView(
+                controller: tabController,
+                children: [
+                  FirendMsgList(),
+                  FriendList(),
+                  GroupList(),
+                ],
+              ),
+            )
           ],
         ),
       ),

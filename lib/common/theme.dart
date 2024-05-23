@@ -54,6 +54,7 @@ class AppTheme {
 
   /// 橙色
   static final primaryTheme = ThemeData(
+    useMaterial3: false,
     primaryColor: primaryColor,
     colorScheme: const ColorScheme.light(
       background: Colors.white,

@@ -34,6 +34,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   # UI组件
   bruno: ^3.4.3
+  tdesign_flutter: 
+   path: ./plugins/tdesign_component
   # 状态管理和路由
   get: ^4.6.6
   # 网络请求
