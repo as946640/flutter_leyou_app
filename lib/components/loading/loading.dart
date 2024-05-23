@@ -107,9 +107,7 @@ class _LoadingPageState extends State<LoadingPage> {
     } finally {}
   }
 
-  onShow() {
-    widget.onShow?.call();
-  }
+  onShow() {}
 
   @override
   void initState() {
