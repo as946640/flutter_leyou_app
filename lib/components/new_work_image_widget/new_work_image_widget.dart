@@ -11,6 +11,8 @@ class NetWorkImg extends StatefulWidget {
     this.loadNum = 3,
     this.isCache = true,
     this.raduis = 0.0,
+    this.loading,
+    this.errWidget,
     this.alignment = Alignment.center,
   });
 
@@ -37,6 +39,12 @@ class NetWorkImg extends StatefulWidget {
 
   /// 对齐方式
   final Alignment alignment;
+
+  /// 加载组件
+  final Widget? loading;
+
+  /// 加载失败组件
+  final Widget? errWidget;
 
   @override
   State<NetWorkImg> createState() => _NewWorkImgState();
@@ -95,11 +103,11 @@ class _NewWorkImgState extends State<NetWorkImg> {
                       return null;
                     case LoadState.failed:
                       if (loadNum >= widget.loadNum) {
-                        return errWidget();
+                        return widget.errWidget ?? errWidget();
                       } else {
                         state.reLoadImage();
                         loadNum += 1;
-                        return loading();
+                        return widget.loading ?? loading();
                       }
                   }
                 },

@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mall_community/common/comm_style.dart';
-import 'package:mall_community/components/Avatar/Avatar.dart';
+import 'package:mall_community/components/avatar/avatar.dart';
 import 'package:mall_community/components/button/button.dart';
 import 'package:mall_community/components/cell_group/cell_group.dart';
 import 'package:mall_community/components/new_work_image_widget/new_work_image_widget.dart';

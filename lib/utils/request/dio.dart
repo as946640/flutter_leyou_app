@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart' as dio;
@@ -69,10 +70,15 @@ class ApiClient {
         url,
         data: data,
         queryParameters: query,
-        options: dio.Options(method: method),
+        options: dio.Options(
+          method: method,
+          headers: {
+            "Content-Type": "application/json"
+          }
+        ),
         cancelToken: cancelToken,
       );
-      return ApiResponse.fromJson(response.data);
+      return ApiResponse.fromJson(response.data is String? json.decode(response.data) : response.data);
     } on dio.DioException catch (e) {
       if (isLoad) {
         ToastUtils.hideLoad();

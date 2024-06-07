@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mall_community/components/tabbar/tabbar.dart';
 import 'package:mall_community/pages/bluetooth/bluetooth_page.dart';
+import 'package:mall_community/pages/home/home_page/home_page.dart';
 import 'package:mall_community/pages/home/msg_list_page/msg_list_page.dart';
 import 'package:mall_community/pages/home/user/user.dart';
 
@@ -19,6 +20,15 @@ class _HomeTabblePageState extends State<HomeTabblePage>
   int index = 0;
   late TabController tabController;
   List pageList = [
+    {
+      'name': '首页',
+      'icon': const Icon(FontAwesomeIcons.message),
+      'activeIcon': Lottie.asset(
+        'lib/assets/lottie/home_msg.json',
+        repeat: false,
+      ),
+      'page': () => HomePage()
+    },
     {
       'name': '消息',
       'icon': const Icon(FontAwesomeIcons.message),

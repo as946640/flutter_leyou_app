@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart' as dio;
 import 'package:mall_community/common/app_config.dart';
 import 'package:mall_community/modules/user_module.dart';
@@ -29,7 +31,8 @@ class LoggingInterceptor extends dio.InterceptorsWrapper {
   @override
   void onResponse(
       dio.Response response, dio.ResponseInterceptorHandler handler) {
-    final apiResponse = ApiResponse.fromJson(response.data);
+    final apiResponse = ApiResponse.fromJson(
+        response.data is String ? json.decode(response.data) : response.data);
     String msg = apiResponse.msg;
     if (apiResponse.code != 1 && apiResponse.code != 200) {
       throw dio.DioException(

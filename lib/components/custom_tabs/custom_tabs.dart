@@ -7,7 +7,7 @@ class Tabs extends StatelessWidget implements PreferredSizeWidget {
     required this.tabs,
     required this.tabController,
     this.change,
-    this.labelStyle,
+    this.labelStyle = const TextStyle(fontSize: 14),
     this.labelColor = Colors.black,
     this.unselectedLabelColor = Colors.black45,
     this.isScrollable = true,
@@ -73,6 +73,7 @@ class Tabs extends StatelessWidget implements PreferredSizeWidget {
         unselectedLabelStyle: unselectedLabelStyle,
         tabAlignment: align,
         indicator: indicator,
+        automaticIndicatorColorAdjustment:false,
         dividerColor: Colors.transparent, // 为了去除底部的边框
         tabs: tabs.map((e) => Tab(text: e['text'])).toList(),
       ),

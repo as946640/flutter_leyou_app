@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mall_community/app.dart';
 import 'package:mall_community/common/app_config.dart';
@@ -14,6 +15,10 @@ void main() async {
 
 init() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+  ));
+
   // 存储
   await GetStorage.init();
   // 隐私政策

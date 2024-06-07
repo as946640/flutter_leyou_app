@@ -8,7 +8,7 @@ class ApiResponse<T> {
   late final String msg;
   late T data;
 
-  ApiResponse.fromJson(Map<String, dynamic> json) {
+  ApiResponse.fromJson(dynamic json) {
     // 这里要兼容 openiM 0 代码没有错误
     int c = json['code'] ?? json['errCode'];
     code = c == 0 ? 200 : c;

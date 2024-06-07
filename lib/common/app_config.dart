@@ -9,6 +9,10 @@ class AppConfig {
   static String baseUrl =
       isProduction() ? '${host}8.138.91.219:3000' : '${host}8.138.91.219:3000';
 
+  /// mock 请求地址
+  static const String mockUrl =
+      "https://mock.apipark.cn/m1/4575065-4223724-default";
+
   /// openIm server api
   static String openApi = isProduction()
       ? '${host}8.138.91.219:10002'
@@ -25,17 +29,20 @@ class AppConfig {
   static const String openImSecret = "openIM123";
 
   /// oss 资源前缀
-  static String ossPath =
+  static const String ossPath =
       "https://public-1259264706.cos.ap-guangzhou.myqcloud.com/";
 
+  /// 七牛云存储资源前缀
+  static const String qiniuPath = "${host}qiniu.as-leyou.top/";
+
   /// 请求超时时间
-  static Duration timeout = const Duration(seconds: 60);
+  static const Duration timeout = Duration(seconds: 60);
 
   /// AppId
-  static int appId = 10001;
+  static const int appId = 10001;
 
   /// 端口ID
-  static String portId = "6";
+  static const String portId = "6";
 
   /// 隐私政策是否同意
   static bool privacyStatementHasAgree = true;

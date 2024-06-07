@@ -36,6 +36,9 @@ dependencies:
   bruno: ^3.4.3
   tdesign_flutter: 
    path: ./plugins/tdesign_component
+  # 3D球形
+  flutter_3d_ball: 
+   path: ./plugins/ball_view
   # 状态管理和路由
   get: ^4.6.6
   # 网络请求
@@ -45,6 +48,8 @@ dependencies:
   video_player: ^2.8.2
   # 音视频通话
   flutter_webrtc: ^0.9.48+hotfix.1
+  # 瀑布流各种列布局
+  flutter_staggered_grid_view: ^0.7.0
   # better_player: ^0.0.83
   # 缓存管理 支持下载文件临时缓存
   flutter_cache_manager: ^3.3.1
@@ -53,7 +58,7 @@ dependencies:
   # 时间工具
   date_time_format: ^2.0.1
   # 下拉刷新
-  easy_refresh: ^3.3.4
+  easy_refresh: ^3.4.0
   # 检测键盘可见
   flutter_keyboard_visibility: ^6.0.0
   # widget 可见性
@@ -61,7 +66,7 @@ dependencies:
   # 扩展NestedScrollView
   extended_nested_scroll_view: ^6.2.1
   # 文本输入框 支持特殊文本
-  extended_text_field: ^13.0.1
+  extended_text_field: ^15.0.0
   # 像素兼容
   flutter_screenutil: ^5.9.0
   # 图标
@@ -134,6 +139,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - lib/assets/image/login/
+    - lib/assets/image/home/
     - lib/assets/lottie/
     - lib/assets/image/
   #   - images/a_dot_ham.jpeg

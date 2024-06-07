@@ -4,13 +4,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mall_community/common/theme.dart';
 
 /// 常用字体大小
-TextStyle tx10 = TextStyle(fontSize: 10.sp);
-TextStyle tx12 = TextStyle(fontSize: 12.sp);
-TextStyle tx14 = TextStyle(fontSize: 14.sp);
-TextStyle tx16 = TextStyle(fontSize: 16.sp);
-TextStyle tx18 = TextStyle(fontSize: 18.sp);
-TextStyle tx20 = TextStyle(fontSize: 20.sp);
-TextStyle tx22 = TextStyle(fontSize: 22.sp);
+TextStyle tx10 = const TextStyle(fontSize: 10);
+TextStyle tx12 = const TextStyle(fontSize: 12);
+TextStyle tx14 = const TextStyle(fontSize: 14);
+TextStyle tx16 = const TextStyle(fontSize: 16);
+TextStyle tx18 = const TextStyle(fontSize: 18);
+TextStyle tx20 = const TextStyle(fontSize: 20);
+TextStyle tx22 = const TextStyle(fontSize: 22);
 
 /**
  * 系统主题色

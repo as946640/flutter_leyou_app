@@ -21,31 +21,28 @@ class TopBar extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 20.w),
       child: Column(
         children: [
-          Positioned(
-            top: ScreenUtil().statusBarHeight,
-            child: SizedBox(
-              width: 1.sw - 40.w,
-              height: 40.h,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Tabs(
-                      tabs: tabs,
-                      tabController: tabController,
-                      labelColor: primaryColor,
-                      unselectedLabelColor: primaryNavColor,
-                      indicator: const BoxDecoration(),
-                      labelStyle: tx20.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+          SizedBox(
+            width: 1.sw - 40.w,
+            height: 40.h,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Tabs(
+                    tabs: tabs,
+                    tabController: tabController,
+                    labelColor: primaryColor,
+                    unselectedLabelColor: primaryNavColor,
+                    indicator: const BoxDecoration(),
+                    labelStyle: tx14.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(IconData(0xe6cb, fontFamily: 'micon')),
-                  ),
-                ],
-              ),
+                ),
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(IconData(0xe6cb, fontFamily: 'micon')),
+                ),
+              ],
             ),
           ),
           buildSearch()
